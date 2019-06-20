@@ -374,8 +374,7 @@
   
     <div class="comments" id="comments">
       
-        <div onclick="showGitment()" id="gitment-display-button">Show comments from Gitment</div>
-        <div id="gitment-container" style="display:none"></div>
+        <div id="gitment-container"></div>
       
     </div>
 
@@ -640,7 +639,7 @@
       function renderGitment(){
         var gitment = new Gitmint({
             id: window.location.pathname, 
-            owner: '5511866',
+            owner: 'DongSky',
             repo: 'dongsky.github.io',
             
             lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
@@ -656,11 +655,7 @@
       }
 
       
-      function showGitment(){
-        document.getElementById("gitment-display-button").style.display = "none";
-        document.getElementById("gitment-container").style.display = "block";
-        renderGitment();
-      }
+      renderGitment();
       
       </script>
     
