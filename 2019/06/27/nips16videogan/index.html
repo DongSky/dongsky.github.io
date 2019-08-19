@@ -79,19 +79,19 @@
 
 
 
-<meta name="description" content="这篇文章中了NIPS 2016，是第一篇正儿八经做Video Generation from scratch的工作。  我们来概述一下思路。由于本文是要完成随机生成整段视频的任务，所以输入自然是一段latent variable，或者说，一个特定维度的随机噪声。当然也可以加入condition从而指导生成特定类别的视频，但这是后话。在这里，作者做了个假设，假定对于一段视频，背景部分始终为静态，所以">
+<meta name="description" content="这篇文章中了NIPS 2016，是第一篇正儿八经做Video Generation from scratch的工作。">
 <meta name="keywords" content="CV">
 <meta property="og:type" content="article">
 <meta property="og:title" content="[Paper Review] Generating Videos with Scene Dynamics">
 <meta property="og:url" content="https://dongsky.github.io/2019/06/27/nips16videogan/index.html">
 <meta property="og:site_name" content="SensePort">
-<meta property="og:description" content="这篇文章中了NIPS 2016，是第一篇正儿八经做Video Generation from scratch的工作。  我们来概述一下思路。由于本文是要完成随机生成整段视频的任务，所以输入自然是一段latent variable，或者说，一个特定维度的随机噪声。当然也可以加入condition从而指导生成特定类别的视频，但这是后话。在这里，作者做了个假设，假定对于一段视频，背景部分始终为静态，所以">
+<meta property="og:description" content="这篇文章中了NIPS 2016，是第一篇正儿八经做Video Generation from scratch的工作。">
 <meta property="og:locale" content="zh-Han">
 <meta property="og:image" content="https://i.loli.net/2019/06/28/5d14e9a00675b34987.png">
-<meta property="og:updated_time" content="2019-07-01T02:50:22.138Z">
+<meta property="og:updated_time" content="2019-08-19T03:32:47.146Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[Paper Review] Generating Videos with Scene Dynamics">
-<meta name="twitter:description" content="这篇文章中了NIPS 2016，是第一篇正儿八经做Video Generation from scratch的工作。  我们来概述一下思路。由于本文是要完成随机生成整段视频的任务，所以输入自然是一段latent variable，或者说，一个特定维度的随机噪声。当然也可以加入condition从而指导生成特定类别的视频，但这是后话。在这里，作者做了个假设，假定对于一段视频，背景部分始终为静态，所以">
+<meta name="twitter:description" content="这篇文章中了NIPS 2016，是第一篇正儿八经做Video Generation from scratch的工作。">
 <meta name="twitter:image" content="https://i.loli.net/2019/06/28/5d14e9a00675b34987.png">
 
 
@@ -323,8 +323,7 @@
 
       
         <p>这篇文章中了NIPS 2016，是第一篇正儿八经做Video Generation from scratch的工作。</p>
-<p><img src="https://i.loli.net/2019/06/28/5d14e9a00675b34987.png" alt="Pipeline"></p>
-<p>我们来概述一下思路。由于本文是要完成随机生成整段视频的任务，所以输入自然是一段latent variable，或者说，一个特定维度的随机噪声。当然也可以加入condition从而指导生成特定类别的视频，但这是后话。在这里，作者做了个假设，假定对于一段视频，背景部分始终为静态，所以只需要做图像生成就可以；对于前景部分，由于都是动态物体，所以需要生成一个连续的sequence。</p>
+<p><img src="https://i.loli.net/2019/06/28/5d14e9a00675b34987.png" alt="Pipeline"><br><a id="more"></a><br>我们来概述一下思路。由于本文是要完成随机生成整段视频的任务，所以输入自然是一段latent variable，或者说，一个特定维度的随机噪声。当然也可以加入condition从而指导生成特定类别的视频，但这是后话。在这里，作者做了个假设，假定对于一段视频，背景部分始终为静态，所以只需要做图像生成就可以；对于前景部分，由于都是动态物体，所以需要生成一个连续的sequence。</p>
 <p>基于这个假设，作者将Video Generation这个任务中的Generator解耦成了两个部分：第一个部分是背景的生成，就是一个传统的Image Generation；第二个是前景生成，考虑到要引入temporal上的连续性，作者采用了3D Convolution。当然，这里还是有个问题，那就是即使是生成前景也不能直接保证只用卷积就能生成出恰好只有精确物体的区域，所以前景分支还是需要额外学一个0-1 mask，用这个东西来完成一个前景-背景分割问题。生成完以上这些之后，可以利用mask圈出需要的前景，以类似贴图的形式贴到背景上。</p>
 <p>对于Discriminator，作者其实并没有刻意去设计，只是用了简单的3D Convolution构造了一个二分类网络。其实说是二分类网络也不太确切，WGAN的Discriminator毕竟最终的output是一个具体的得分/向量，算距离用的。</p>
 <p>其他的部分和标准的GAN差不多。当然，作为baseline，作者也只是验证了这一思路是可以完成生成整段视频的任务的，图像质量和语义层级的质量提升，并没有着重考虑，因此有很大的改进空间。</p>
@@ -369,8 +368,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/07/01/cvpr2019dfcnet/" rel="prev" title="cvpr2019dfcnet">
-                cvpr2019dfcnet <i class="fa fa-chevron-right"></i>
+              <a href="/2019/08/18/tokyovisit2019/" rel="prev" title="一段梦境的序章，正文，花絮与尾声————东京之行的一点记录">
+                一段梦境的序章，正文，花絮与尾声————东京之行的一点记录 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -446,7 +445,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
