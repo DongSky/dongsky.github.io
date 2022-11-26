@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Han">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="study,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="ECCV投稿结束一个月了，之前一个研究周期点了一下新的技能点，就是怎么写PyTorch的C++ Extension。网上的教程多是旧体系的写法，我试着摸索了一下新版本该怎么写，现在整理一下留个备份。">
+<meta name="keywords" content="study">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何让PyTorch与C++联动(1.x版)">
+<meta property="og:url" content="https://dongsky.github.io/2020/04/04/pytorch1xcppext/index.html">
+<meta property="og:site_name" content="SensePort">
+<meta property="og:description" content="ECCV投稿结束一个月了，之前一个研究周期点了一下新的技能点，就是怎么写PyTorch的C++ Extension。网上的教程多是旧体系的写法，我试着摸索了一下新版本该怎么写，现在整理一下留个备份。">
+<meta property="og:locale" content="zh-Han">
+<meta property="og:updated_time" content="2020-04-04T14:48:37.962Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="如何让PyTorch与C++联动(1.x版)">
+<meta name="twitter:description" content="ECCV投稿结束一个月了，之前一个研究周期点了一下新的技能点，就是怎么写PyTorch的C++ Extension。网上的教程多是旧体系的写法，我试着摸索了一下新版本该怎么写，现在整理一下留个备份。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://dongsky.github.io/2020/04/04/pytorch1xcppext/">
+
+
+
+
+
+  <title>如何让PyTorch与C++联动(1.x版) | SensePort</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Han">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">SensePort</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">DongSky's Geek Space</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br>
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://dongsky.github.io/2020/04/04/pytorch1xcppext/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="DongSky">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SensePort">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">如何让PyTorch与C++联动(1.x版)</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-04-04T14:56:01+08:00">
+                2020-04-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/04/04/pytorch1xcppext/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2020/04/04/pytorch1xcppext/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>ECCV投稿结束一个月了，之前一个研究周期点了一下新的技能点，就是怎么写PyTorch的C++ Extension。网上的教程多是旧体系的写法，我试着摸索了一下新版本该怎么写，现在整理一下留个备份。</p>
+<a id="more"></a>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>Python这门语言大家公认很简单，但是有一些很致命的问题，最典型的就是部分过程的执行效率不太够，例如循环。有的算法套上多层循环，在数据量太大的时候就非常慢</p>
+<p>众所周知，Python和C/C++是可以进行联合编程的。基础思路如下，首先，实现该算法的C/C++版本；然后利用Python.h中定义的PyObject，实现接口代码与前端的Python Code建立关联；最后编写Python代码，例如说利用setuptools实现一个编译的配置，执行这段代码自动完成编译流程。Python便可以借由此方法完成提速。</p>
+<p>同理，对于PyTorch，我们也可以采用类似的办法，将需要的算法封装成动态链接库，然后在Python中调用，提速原有的利用Python实现算法。</p>
+<h2 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h2><p>首先，我们要能够写出来该算法的CPP版本，例如说，有一个复杂度为O(n^3)的算法，传入多个变量返回一个数组，数组的指针借由参数传入，我们可以按照常例将这个算法写出来，就跟打ICPC时写题一样。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">foo</span><span class="params">(<span class="keyword">static</span> <span class="keyword">float</span> * mat, <span class="keyword">static</span> <span class="keyword">float</span> * ans)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// blabla...</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; n; j++) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> k = <span class="number">0</span>; k &lt; n; k++) &#123;</span><br><span class="line">                <span class="comment">//ops;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在这里需要注意，由于实现的算法通常需要保证可导以便顺利地执行前向传播和反向传播的运算，所以在实现时，我们通常会同时实现一个算法的前向传播和反向传播运算，出于习惯会使用forward/backward后缀进行表示，我们会定义foo_forward_kernel/foo_backward_kernel来表示核心运算函数。</p>
+<p>第二步，借助torch/extension.h中封装好的类型at::Tensor，构建对接PyTorch的函数，将传入参数通过.data\&lt;T>()的方式显示转换成C++ Type，然后调用第一步写好的函数去执行。以foo_forward为例，我们一般会表示成如下的样子。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">at::<span class="function">Tensor <span class="title">foo_forward</span><span class="params">(at::Tensor Mat)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// blabla...</span></span><br><span class="line">    at::Tensor ans;</span><br><span class="line">    <span class="comment">// blabla...</span></span><br><span class="line">    foo_forward_kernel(Mat.data&lt;<span class="keyword">float</span>&gt;(), ans.dat&lt;<span class="keyword">float</span>&gt;());</span><br><span class="line">    <span class="comment">// blabla...</span></span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>第三步，编写基于setuptools的脚本，例如命名叫做setup.py，然后执行即可。示例代码如下。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> setuptools <span class="keyword">import</span> find_packages, setup</span><br><span class="line">setup(</span><br><span class="line">    name=<span class="string">"cfoo"</span>,</span><br><span class="line">    version=<span class="string">"1.14.514"</span>,</span><br><span class="line">    description=<span class="string">"example code"</span>,</span><br><span class="line">    packages=find_packages(exclude=(<span class="string">"configs"</span>, <span class="string">"tests"</span>,)),</span><br><span class="line">    ext_modules=get_extensions(),</span><br><span class="line">    cmdclass=&#123;<span class="string">"build_ext"</span>: torch.utils.cpp_extension.BuildExtension&#125;,</span><br><span class="line">)</span><br></pre></td></tr></table></figure></p>
+<p>等等，还没完，你们不觉得直接这么使用forward/backward函数很不方便么？幸运的是，PyTorch内建的Module和Function可以轻松地封装任意运算的一对前向与反向操作，在执行过程中可以直接调用，并且自动完成反向传播的过程。这部分不做示例，但后面的样例代码会提到。</p>
+<h2 id="样例"><a href="#样例" class="headerlink" title="样例"></a>样例</h2><p>在这里我们使用<em>Tang et al.</em>提出的Proposal Cluster Learning Loss Function进行示例。</p>
+<p>考虑到方便在GPU上运行，我们就随便写一点CUDA代码啦。<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// pcl_loss_cuda.cu</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;math.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;float.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;ATen/ATen.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;ATen/cuda/CUDAContext.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;THC/THC.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;THC/THCAtomics.cuh&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;THC/THCDeviceUtils.cuh&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"cuda/vision.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> DIVUP(m, n) ((m) / (m) + ((m) % (n) &gt; 0))</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> CUDA_1D_KERNEL_LOOP(i, n)                            \</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> i = blockIdx.x * blockDim.x + threadIdx.x; i &lt; n; \</span><br><span class="line">       i += blockDim.x * gridDim.x)</span><br><span class="line"></span><br><span class="line"><span class="comment">// CUDA: grid stride looping</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> CUDA_KERNEL_LOOP(i, n) \</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> i = blockIdx.x * blockDim.x + threadIdx.x; \</span><br><span class="line">       i &lt; (n); \</span><br><span class="line">       i += blockDim.x * gridDim.x)</span><br><span class="line"></span><br><span class="line">__<span class="function">global__ <span class="keyword">void</span> <span class="title">PCLLossesForward</span><span class="params">(<span class="keyword">const</span> <span class="keyword">int</span> nthreads, <span class="keyword">const</span> <span class="keyword">float</span>* bottom_data, </span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">const</span> <span class="keyword">float</span>* labels, <span class="keyword">const</span> <span class="keyword">float</span>* cls_loss_weights, <span class="keyword">const</span> <span class="keyword">float</span>* pc_labels,</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">const</span> <span class="keyword">float</span>* pc_probs, <span class="keyword">const</span> <span class="keyword">float</span>* img_cls_loss_weights, </span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">const</span> <span class="keyword">float</span>* im_labels, <span class="keyword">const</span> <span class="keyword">int</span> batch_size, <span class="keyword">const</span> <span class="keyword">int</span> num_positive, <span class="keyword">float</span>* top_data)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    CUDA_KERNEL_LOOP(index, nthreads)</span><br><span class="line">    &#123;</span><br><span class="line">        top_data[index] = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span> (im_labels[index] != <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (index == <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; batch_size; i++) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (labels[i] == <span class="number">0</span>) &#123;</span><br><span class="line">                        top_data[index] -= cls_loss_weights[i] * <span class="built_in">log</span>(bottom_data[i * nthreads + index]);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; num_positive; i++) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (pc_labels[i] == index) &#123;</span><br><span class="line">                        top_data[index] -= img_cls_loss_weights[i] * <span class="built_in">log</span>(pc_probs[i]);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">PCLLossesForwardLaucher</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">const</span> <span class="keyword">float</span>* bottom_data, <span class="keyword">const</span> <span class="keyword">float</span>* labels, <span class="keyword">const</span> <span class="keyword">float</span>* cls_loss_weights,</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">const</span> <span class="keyword">float</span>* pc_labels, <span class="keyword">const</span> <span class="keyword">float</span>* pc_probs, <span class="keyword">const</span> <span class="keyword">float</span>* img_cls_loss_weights,</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">const</span> <span class="keyword">float</span>* im_labels, <span class="keyword">const</span> <span class="keyword">int</span> batch_size, <span class="keyword">const</span> <span class="keyword">int</span> channels, </span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">const</span> <span class="keyword">int</span> num_positive, <span class="keyword">float</span>* top_data, cudaStream_t stream)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">int</span> kThreadsPerBlock = <span class="number">4</span>;</span><br><span class="line">    cudaError_t err;</span><br><span class="line"></span><br><span class="line">    PCLLossesForward&lt;&lt;&lt;(channels + kThreadsPerBlock - <span class="number">1</span>) / kThreadsPerBlock, kThreadsPerBlock, <span class="number">0</span>, stream&gt;&gt;&gt;(</span><br><span class="line">      channels, bottom_data, labels, cls_loss_weights, pc_labels, pc_probs, img_cls_loss_weights,</span><br><span class="line">      im_labels, batch_size, num_positive, top_data);</span><br><span class="line"></span><br><span class="line">    err = cudaGetLastError();</span><br><span class="line">    <span class="keyword">if</span>(cudaSuccess != err)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">fprintf</span>( <span class="built_in">stderr</span>, <span class="string">"cudaCheckError() failed : %s\n"</span>, cudaGetErrorString( err ) );</span><br><span class="line">        <span class="built_in">exit</span>( <span class="number">-1</span> );</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">__<span class="function">global__ <span class="keyword">void</span> <span class="title">PCLLossesBackward</span><span class="params">(<span class="keyword">const</span> <span class="keyword">int</span> nthreads, <span class="keyword">const</span> <span class="keyword">float</span>* prob_data, </span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">const</span> <span class="keyword">float</span>* labels, <span class="keyword">const</span> <span class="keyword">float</span>* cls_loss_weights, <span class="keyword">const</span> <span class="keyword">float</span>* gt_assignment,</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">const</span> <span class="keyword">float</span>* pc_labels, <span class="keyword">const</span> <span class="keyword">float</span>* pc_probs, <span class="keyword">const</span> <span class="keyword">float</span>* pc_count,</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">const</span> <span class="keyword">float</span>* img_cls_loss_weights, <span class="keyword">const</span> <span class="keyword">float</span>* im_labels, <span class="keyword">const</span> <span class="keyword">int</span> channels, </span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">float</span>* bottom_diff)</span> </span>&#123;</span><br><span class="line">    CUDA_1D_KERNEL_LOOP(index, nthreads)</span><br><span class="line">    &#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> i = index / channels;</span><br><span class="line">        <span class="keyword">int</span> c = index % channels;</span><br><span class="line">        bottom_diff[index] = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (im_labels[c] != <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (c == <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (labels[i] == <span class="number">0</span>) &#123;</span><br><span class="line">                    bottom_diff[index] = -cls_loss_weights[i] / prob_data[index];</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">if</span> (labels[i] == c) &#123;</span><br><span class="line">                    <span class="keyword">int</span> pc_index = gt_assignment[i];</span><br><span class="line">                    <span class="keyword">if</span> (c != pc_labels[pc_index]) &#123;</span><br><span class="line">                        <span class="built_in">printf</span>(<span class="string">"labels mismatch.\n"</span>);</span><br><span class="line">                    &#125;</span><br><span class="line">                    bottom_diff[index] = -img_cls_loss_weights[pc_index]</span><br><span class="line">                        / (pc_count[pc_index] * pc_probs[pc_index]);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">PCLLossesBackwardLaucher</span><span class="params">(<span class="keyword">const</span> <span class="keyword">float</span>* top_diff, <span class="keyword">const</span> <span class="keyword">float</span>* prob_data, </span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">const</span> <span class="keyword">float</span>* labels, <span class="keyword">const</span> <span class="keyword">float</span>* cls_loss_weights, <span class="keyword">const</span> <span class="keyword">float</span>* gt_assignment,</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">const</span> <span class="keyword">float</span>* pc_labels, <span class="keyword">const</span> <span class="keyword">float</span>* pc_probs, <span class="keyword">const</span> <span class="keyword">float</span>* pc_count,</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">const</span> <span class="keyword">float</span>* img_cls_loss_weights, <span class="keyword">const</span> <span class="keyword">float</span>* im_labels, <span class="keyword">const</span> <span class="keyword">int</span> batch_size, </span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">const</span> <span class="keyword">int</span> channels, <span class="keyword">float</span>* bottom_diff, cudaStream_t stream)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">int</span> kThreadsPerBlock = <span class="number">16</span>;</span><br><span class="line">    <span class="keyword">int</span> output_size = batch_size * channels;</span><br><span class="line">    cudaError_t err;</span><br><span class="line"></span><br><span class="line">    PCLLossesBackward&lt;&lt;&lt;(output_size + kThreadsPerBlock - <span class="number">1</span>) / kThreadsPerBlock, kThreadsPerBlock, <span class="number">0</span>, stream&gt;&gt;&gt;(</span><br><span class="line">      output_size, prob_data, labels, cls_loss_weights, gt_assignment, pc_labels, pc_probs, pc_count,</span><br><span class="line">      img_cls_loss_weights, im_labels, channels, bottom_diff);</span><br><span class="line"></span><br><span class="line">    err = cudaGetLastError();</span><br><span class="line">    <span class="keyword">if</span>(cudaSuccess != err)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">fprintf</span>( <span class="built_in">stderr</span>, <span class="string">"cudaCheckError() failed : %s\n"</span>, cudaGetErrorString( err ) );</span><br><span class="line">        <span class="built_in">exit</span>( <span class="number">-1</span> );</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">at::<span class="function">Tensor <span class="title">pcl_losses_forward_cuda</span><span class="params">(<span class="keyword">const</span> at::Tensor&amp; pcl_probs,</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">const</span> at::Tensor&amp; labels,</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">const</span> at::Tensor&amp; cls_loss_weights,</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">const</span> at::Tensor&amp; pc_labels,</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">const</span> at::Tensor&amp; pc_probs,</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">const</span> at::Tensor&amp; img_cls_loss_weights,</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">const</span> at::Tensor&amp; im_labels)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> batch_size = pcl_probs.size(<span class="number">0</span>);</span><br><span class="line">    <span class="keyword">int</span> channels = pcl_probs.size(<span class="number">1</span>);</span><br><span class="line">    <span class="keyword">int</span> num_positive = pc_labels.size(<span class="number">1</span>);</span><br><span class="line">    at::Tensor output = at::empty(&#123;<span class="number">1</span>, channels&#125;, pcl_probs.options());</span><br><span class="line">    cudaStream_t stream = at::cuda::getCurrentCUDAStream();</span><br><span class="line">    PCLLossesForwardLaucher(</span><br><span class="line">        pcl_probs.data&lt;<span class="keyword">float</span>&gt;(),</span><br><span class="line">        labels.data&lt;<span class="keyword">float</span>&gt;(),</span><br><span class="line">        cls_loss_weights.data&lt;<span class="keyword">float</span>&gt;(),</span><br><span class="line">        pc_labels.data&lt;<span class="keyword">float</span>&gt;(),</span><br><span class="line">        pc_probs.data&lt;<span class="keyword">float</span>&gt;(),</span><br><span class="line">        img_cls_loss_weights.data&lt;<span class="keyword">float</span>&gt;(),</span><br><span class="line">        im_labels.data&lt;<span class="keyword">float</span>&gt;(),</span><br><span class="line">        batch_size, channels, num_positive,</span><br><span class="line">        output.data&lt;<span class="keyword">float</span>&gt;(),</span><br><span class="line">        stream</span><br><span class="line">    );</span><br><span class="line">    <span class="keyword">return</span> output;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">at::<span class="function">Tensor <span class="title">pcl_losses_backward_cuda</span><span class="params">(<span class="keyword">const</span> at::Tensor&amp; pcl_probs,</span></span></span><br><span class="line"><span class="function"><span class="params">     <span class="keyword">const</span> at::Tensor&amp; labels,</span></span></span><br><span class="line"><span class="function"><span class="params">     <span class="keyword">const</span> at::Tensor&amp; cls_loss_weights,</span></span></span><br><span class="line"><span class="function"><span class="params">     <span class="keyword">const</span> at::Tensor&amp; gt_assignment,</span></span></span><br><span class="line"><span class="function"><span class="params">     <span class="keyword">const</span> at::Tensor&amp; pc_labels,</span></span></span><br><span class="line"><span class="function"><span class="params">     <span class="keyword">const</span> at::Tensor&amp; pc_probs,</span></span></span><br><span class="line"><span class="function"><span class="params">     <span class="keyword">const</span> at::Tensor&amp; pc_count,</span></span></span><br><span class="line"><span class="function"><span class="params">     <span class="keyword">const</span> at::Tensor&amp; img_cls_loss_weights,</span></span></span><br><span class="line"><span class="function"><span class="params">     <span class="keyword">const</span> at::Tensor&amp; im_labels,</span></span></span><br><span class="line"><span class="function"><span class="params">     <span class="keyword">const</span> at::Tensor&amp; top_grad)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> batch_size = pcl_probs.size(<span class="number">0</span>);</span><br><span class="line">    <span class="keyword">int</span> channels = pcl_probs.size(<span class="number">1</span>);</span><br><span class="line">    at::Tensor bottom_grad = at::zeros(&#123;batch_size, channels&#125;, pcl_probs.options());</span><br><span class="line">    cudaStream_t stream = at::cuda::getCurrentCUDAStream();</span><br><span class="line">    PCLLossesBackwardLaucher(</span><br><span class="line">        top_grad.data&lt;<span class="keyword">float</span>&gt;(),</span><br><span class="line">        pcl_probs.data&lt;<span class="keyword">float</span>&gt;(),</span><br><span class="line">        labels.data&lt;<span class="keyword">float</span>&gt;(),</span><br><span class="line">        cls_loss_weights.data&lt;<span class="keyword">float</span>&gt;(),</span><br><span class="line">        gt_assignment.data&lt;<span class="keyword">float</span>&gt;(),</span><br><span class="line">        pc_labels.data&lt;<span class="keyword">float</span>&gt;(),</span><br><span class="line">        pc_probs.data&lt;<span class="keyword">float</span>&gt;(),</span><br><span class="line">        pc_count.data&lt;<span class="keyword">float</span>&gt;(),</span><br><span class="line">        img_cls_loss_weights.data&lt;<span class="keyword">float</span>&gt;(),</span><br><span class="line">        im_labels.data&lt;<span class="keyword">float</span>&gt;(),</span><br><span class="line">        batch_size, channels,</span><br><span class="line">        bottom_grad.data&lt;<span class="keyword">float</span>&gt;(),</span><br><span class="line">        stream</span><br><span class="line">    );</span><br><span class="line">    <span class="keyword">return</span> bottom_grad;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>同时我们如下定义头文件。<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// cuda/vision.h</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> once</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;torch/extension.h&gt;</span></span></span><br><span class="line">at::<span class="function">Tensor <span class="title">pcl_losses_forward_cuda</span><span class="params">(<span class="keyword">const</span> at::Tensor&amp; pcl_probs,</span></span></span><br><span class="line"><span class="function"><span class="params">                                  <span class="keyword">const</span> at::Tensor&amp; labels,</span></span></span><br><span class="line"><span class="function"><span class="params">                                  <span class="keyword">const</span> at::Tensor&amp; cls_loss_weights,</span></span></span><br><span class="line"><span class="function"><span class="params">                                  <span class="keyword">const</span> at::Tensor&amp; pc_labels,</span></span></span><br><span class="line"><span class="function"><span class="params">                                  <span class="keyword">const</span> at::Tensor&amp; pc_probs,</span></span></span><br><span class="line"><span class="function"><span class="params">                                  <span class="keyword">const</span> at::Tensor&amp; img_cls_loss_weights,</span></span></span><br><span class="line"><span class="function"><span class="params">                                  <span class="keyword">const</span> at::Tensor&amp; im_labels)</span></span>;</span><br><span class="line"></span><br><span class="line">at::<span class="function">Tensor <span class="title">pcl_losses_backward_cuda</span><span class="params">(<span class="keyword">const</span> at::Tensor&amp; pcl_probs,</span></span></span><br><span class="line"><span class="function"><span class="params">                                   <span class="keyword">const</span> at::Tensor&amp; labels,</span></span></span><br><span class="line"><span class="function"><span class="params">                                   <span class="keyword">const</span> at::Tensor&amp; cls_loss_weights,</span></span></span><br><span class="line"><span class="function"><span class="params">                                   <span class="keyword">const</span> at::Tensor&amp; gt_assignment,</span></span></span><br><span class="line"><span class="function"><span class="params">                                   <span class="keyword">const</span> at::Tensor&amp; pc_labels,</span></span></span><br><span class="line"><span class="function"><span class="params">                                   <span class="keyword">const</span> at::Tensor&amp; pc_probs,</span></span></span><br><span class="line"><span class="function"><span class="params">                                   <span class="keyword">const</span> at::Tensor&amp; pc_count,</span></span></span><br><span class="line"><span class="function"><span class="params">                                   <span class="keyword">const</span> at::Tensor&amp; img_cls_loss_weights,</span></span></span><br><span class="line"><span class="function"><span class="params">                                   <span class="keyword">const</span> at::Tensor&amp; im_labels,</span></span></span><br><span class="line"><span class="function"><span class="params">                                   <span class="keyword">const</span> at::Tensor&amp; top_grad)</span></span>;</span><br></pre></td></tr></table></figure></p>
+<p>接下来就可以进入setup流程以编译对应的动态链接库。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># setup.py</span></span><br><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="keyword">import</span> glob</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">from</span> setuptools <span class="keyword">import</span> find_packages</span><br><span class="line"><span class="keyword">from</span> setuptools <span class="keyword">import</span> setup</span><br><span class="line"><span class="keyword">from</span> torch.utils.cpp_extension <span class="keyword">import</span> CUDA_HOME</span><br><span class="line"><span class="keyword">from</span> torch.utils.cpp_extension <span class="keyword">import</span> CppExtension</span><br><span class="line"><span class="keyword">from</span> torch.utils.cpp_extension <span class="keyword">import</span> CUDAExtension</span><br><span class="line"></span><br><span class="line">requirements = [<span class="string">"torch"</span>, <span class="string">"torchvision"</span>]</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_extensions</span><span class="params">()</span>:</span></span><br><span class="line">    this_dir = os.path.dirname(os.path.abspath(__file__))</span><br><span class="line">    extensions_dir = os.path.join(this_dir, <span class="string">"csrc"</span>)</span><br><span class="line"></span><br><span class="line">    main_file = glob.glob(os.path.join(extensions_dir, <span class="string">"*.cpp"</span>))</span><br><span class="line">    source_cpu = glob.glob(os.path.join(extensions_dir, <span class="string">"cpu"</span>, <span class="string">"*.cpp"</span>))</span><br><span class="line">    source_cuda = glob.glob(os.path.join(extensions_dir, <span class="string">"cuda"</span>, <span class="string">"*.cu"</span>))</span><br><span class="line"></span><br><span class="line">    sources = main_file + source_cpu</span><br><span class="line">    extension = CppExtension</span><br><span class="line"></span><br><span class="line">    extra_compile_args = &#123;<span class="string">"cxx"</span>: []&#125;</span><br><span class="line">    define_macros = []</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> torch.cuda.is_available() <span class="keyword">and</span> CUDA_HOME <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">        extension = CUDAExtension</span><br><span class="line">        sources += source_cuda</span><br><span class="line">        define_macros += [(<span class="string">"WITH_CUDA"</span>, <span class="literal">None</span>)]</span><br><span class="line">        extra_compile_args[<span class="string">"nvcc"</span>] = [</span><br><span class="line">            <span class="string">"-DCUDA_HAS_FP16=1"</span>,</span><br><span class="line">            <span class="string">"-D__CUDA_NO_HALF_OPERATORS__"</span>,</span><br><span class="line">            <span class="string">"-D__CUDA_NO_HALF_CONVERSIONS__"</span>,</span><br><span class="line">            <span class="string">"-D__CUDA_NO_HALF2_OPERATORS__"</span>,</span><br><span class="line">        ]</span><br><span class="line"></span><br><span class="line">    sources = [os.path.join(extensions_dir, s) <span class="keyword">for</span> s <span class="keyword">in</span> sources]</span><br><span class="line"></span><br><span class="line">    include_dirs = [extensions_dir]</span><br><span class="line"></span><br><span class="line">    ext_modules = [</span><br><span class="line">        extension(</span><br><span class="line">            <span class="string">"faster_rcnn._C"</span>,</span><br><span class="line">            sources,</span><br><span class="line">            include_dirs=include_dirs,</span><br><span class="line">            define_macros=define_macros,</span><br><span class="line">            extra_compile_args=extra_compile_args,</span><br><span class="line">        )</span><br><span class="line">    ]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> ext_modules</span><br><span class="line"></span><br><span class="line">setup(</span><br><span class="line">    name=<span class="string">"faster_rcnn"</span>,</span><br><span class="line">    version=<span class="string">"0.1"</span>,</span><br><span class="line">    description=<span class="string">"object detection in pytorch"</span>,</span><br><span class="line">    packages=find_packages(exclude=(<span class="string">"configs"</span>, <span class="string">"tests"</span>,)),</span><br><span class="line">    <span class="comment"># install_requires=requirements,</span></span><br><span class="line">    ext_modules=get_extensions(),</span><br><span class="line">    cmdclass=&#123;<span class="string">"build_ext"</span>: torch.utils.cpp_extension.BuildExtension&#125;,</span><br><span class="line">)</span><br></pre></td></tr></table></figure></p>
+<p>最后，我们用PyTorch封装一下动态链接库内的函数。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># pcl_loss.py</span></span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">from</span> torch <span class="keyword">import</span> nn</span><br><span class="line"><span class="keyword">from</span> torch.autograd <span class="keyword">import</span> Function</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> model.cpp.faster_rcnn <span class="keyword">import</span> _C</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PCLLosses</span><span class="params">(Function)</span>:</span></span><br><span class="line"><span class="meta">    @staticmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, pcl_probs, labels, cls_loss_weights, gt_assignment,</span></span></span><br><span class="line"><span class="function"><span class="params">                pc_labels, pc_probs, pc_count, img_cls_loss_weights,</span></span></span><br><span class="line"><span class="function"><span class="params">                im_labels)</span>:</span></span><br><span class="line">        device_id = pcl_probs.get_device()</span><br><span class="line">        self.save_for_backward(pcl_probs, labels, cls_loss_weights, gt_assignment, pc_labels, pc_probs, pc_count, img_cls_loss_weights,</span><br><span class="line">                               im_labels, torch.tensor(device_id))</span><br><span class="line">        output = _C.pcl_losses_forward(pcl_probs, labels, cls_loss_weights,</span><br><span class="line">                                     pc_labels, pc_probs, img_cls_loss_weights,</span><br><span class="line">                                     im_labels)</span><br><span class="line">        <span class="keyword">return</span> output.sum() / pcl_probs.size(<span class="number">0</span>)</span><br><span class="line">    </span><br><span class="line"><span class="meta">    @staticmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">backward</span><span class="params">(self, grad_output)</span>:</span></span><br><span class="line">        pcl_probs, labels, cls_loss_weights, gt_assignment, pc_labels, pc_probs, \</span><br><span class="line">        pc_count, img_cls_loss_weights, im_labels, device_id = self.saved_tensors</span><br><span class="line">        </span><br><span class="line">        grad_input = _C.pcl_losses_backward(pcl_probs, labels, cls_loss_weights,</span><br><span class="line">                                       gt_assignment, pc_labels, pc_probs,</span><br><span class="line">                                       pc_count, img_cls_loss_weights, im_labels,</span><br><span class="line">                                       grad_output)</span><br><span class="line">        grad_input /= pcl_probs.size(<span class="number">0</span>)</span><br><span class="line">        <span class="keyword">return</span> grad_input.cuda(device_id.item()), <span class="literal">None</span>, <span class="literal">None</span>, <span class="literal">None</span>, <span class="literal">None</span>, <span class="literal">None</span>, <span class="literal">None</span>, <span class="literal">None</span>, <span class="literal">None</span></span><br></pre></td></tr></table></figure></p>
+<p>到这里我们就完成啦。Enjoy Machine Learning!</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/study/" rel="tag"># study</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/12/30/conclusion2019/" rel="next" title="9102的年终总结">
+                <i class="fa fa-chevron-left"></i> 9102的年终总结
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/05/07/latextableintro1/" rel="prev" title="三言两语LaTeX的表格 (1)">
+                三言两语LaTeX的表格 (1) <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">DongSky</p>
+              <p class="site-description motion-element" itemprop="description">Computer Vision, Software Engineering, Machine Learning, Prediction, Life, and Others. https://read.gift/u/dongskycn</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/DongSky" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://touko.moe/" title="Touko" target="_blank">Touko</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://alxnagami.me/" title="哇欧根" target="_blank">哇欧根</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://akaisora.tech/" title="Akaisora" target="_blank">Akaisora</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://mistakey.top/" title="叶月辉夜" target="_blank">叶月辉夜</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://wwyqianqian.github.io/" title="千千" target="_blank">千千</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#原理"><span class="nav-number">1.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#流程"><span class="nav-number">2.</span> <span class="nav-text">流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#样例"><span class="nav-number">3.</span> <span class="nav-text">样例</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">DongSky</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://dongsky.github.io/gitment/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: window.location.pathname, 
+            owner: 'DongSky',
+            repo: 'dongsky.github.io',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '65da2b65fa8386d28a47d8b317551927caec8005',
+            
+                client_id: '83af58a023dd27a78c9a'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
