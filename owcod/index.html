@@ -1,70 +1,773 @@
-{% extends '_layout.swig' %}
-{% import '_macro/sidebar.swig' as sidebar_template %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>MR-GDINO: Efficient Open-World Continual Object Detection</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 
-  {% block title %}{#
-  #}{% set page_title_suffix = ' | ' + config.title %}{#
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FYQNRK8LHK"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-FYQNRK8LHK');
+    </script>
 
-  #}{% if page.type === "categories" and not page.title %}{#
-    #}{{ __('title.category') + page_title_suffix }}{#
-  #}{% elif page.type === "tags" and not page.title %}{#
-    #}{{ __('title.tag') + page_title_suffix }}{#
-  #}{% else %}{#
-    #}{{ page.title + page_title_suffix }}{#
-  #}{% endif %}{#
-#}{% endblock %}
+    <!-- Material Design Dependencies -->
+    <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
-{% block page_class %}page-post-detail{% endblock %}
+    <style>
+        :root {
+            --mdc-theme-primary: #1976d2;
+            --mdc-theme-secondary: #388e3c;
+            --mdc-theme-background: #fafafa;
+            --mdc-theme-surface: #ffffff;
+            --mdc-typography-font-family: 'Roboto', sans-serif;
+        }
 
-{% block content %}
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--mdc-theme-background);
+            font-family: var(--mdc-typography-font-family);
+            color: rgba(0, 0, 0, 0.87);
+            line-height: 1.6;
+        }
 
-  <div id="posts" class="posts-expand">
-    {##################}
-    {### PAGE BLOCK ###}
-    {##################}
-    <div class="post-block page">
-      {% include '_partials/page-header.swig' %}
-      {#################}
-      {### PAGE BODY ###}
-      {#################}
-      <div class="post-body{% if theme.han %} han-init-context{% endif %}{% if page.direction && page.direction.toLowerCase() === 'rtl' %} rtl{% endif %}">
-        {# tagcloud page support #}
-        {% if page.type === "tags" %}
-          <div class="tag-cloud">
-            <div class="tag-cloud-title">
-                {{ _p('counter.tag_cloud', site.tags.length) }}
+        .mdc-top-app-bar {
+            position: fixed;
+            background-color: var(--mdc-theme-surface);
+            color: rgba(0, 0, 0, 0.87);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .main-content {
+            padding-top: 64px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .paper-card {
+            background: var(--mdc-theme-surface);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+
+        .title-section {
+            text-align: center;
+            padding: 24px 0;
+        }
+
+        .author-section {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .author-chip {
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 16px;
+            background: #e0e0e0;
+            color: rgba(0, 0, 0, 0.87);
+            transition: background-color 0.2s;
+        }
+
+        .author-chip:hover {
+            background: #bdbdbd;
+        }
+
+        .mdc-data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 24px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .mdc-data-table th,
+        .mdc-data-table td {
+            padding: 12px;
+            border: 1px solid rgba(0,0,0,0.12);
+        }
+
+        .mdc-data-table th {
+            background-color: #f5f5f5;
+            font-weight: 500;
+        }
+
+        .mdc-data-table tr:hover {
+            background-color: rgba(0,0,0,0.04);
+        }
+
+        .highlight-cell {
+            font-weight: bold;
+            color: var(--mdc-theme-primary);
+        }
+
+        .underline-cell {
+            text-decoration: underline;
+        }
+
+        .video-container {
+            width: 100%;
+            margin: 32px 0;
+        }
+
+        .video-container video {
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .image-container {
+            width: 100%;
+            margin: 32px 0;
+            text-align: center;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 500;
+            color: var(--mdc-theme-primary);
+            margin: 24px 0 16px;
+            text-align: center;
+        }
+
+        .subsection-title {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.87);
+            margin: 20px 0 12px;
+        }
+
+        .citation-card {
+            background: #f5f5f5;
+            padding: 24px;
+            border-radius: 8px;
+            position: relative;
+            margin: 24px 0;
+        }
+
+        .mdc-typography--headline3 {
+            margin: 16px 0 12px;
+        }
+
+        .mdc-typography--headline5 {
+            margin: 12px 0 8px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 16px;
+            }
+            
+            .author-section {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .section-title {
+                margin: 20px 0 12px;
+                font-size: 1.5rem;
+            }
+            
+            .subsection-title {
+                margin: 16px 0 8px;
+                font-size: 1.2rem;
+            }
+        }
+
+        /* 表格第2-7列居中显示 */
+        .mdc-data-table td:nth-child(n+2),
+        .mdc-data-table th:nth-child(n+2) {
+            text-align: center;
+        }
+
+        /* 第一列保持左对齐 */
+        .mdc-data-table td:first-child,
+        .mdc-data-table th:first-child {
+            text-align: left;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Top App Bar -->
+    <header class="mdc-top-app-bar">
+        <div class="mdc-top-app-bar__row">
+            <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+                <span class="mdc-top-app-bar__title">MR-GDINO</span>
+            </section>
+            <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end">
+                <a href="#overview" class="mdc-top-app-bar__action-item">Overview</a>
+                <a href="#benchmark" class="mdc-top-app-bar__action-item">Benchmark</a>
+                <a href="#framework" class="mdc-top-app-bar__action-item">Framework</a>
+                <a href="#leaderboard" class="mdc-top-app-bar__action-item">Leaderboard</a>
+            </section>
+        </div>
+    </header>
+
+    <div class="main-content">
+        <div class="container">
+            <!-- Title Section -->
+            <div class="paper-card title-section">
+                <h1 class="mdc-typography--headline4">MR-GDINO: Efficient Open-World Continual Object Detection</h1>
+                <!-- <h2 class="mdc-typography--headline5">MR-GDINO: Efficient Open-World Continual Object Detection</h2> -->
+                
+                <!-- Authors -->
+                <div class="author-section">
+                    <a href="" class="author-chip" onclick="alert('?')">
+                        <span>Bowen Dong<sup>1,2</sup></span>
+                    </a>
+                    <a href="https://scholar.google.com/citations?user=WHVC7kkAAAAJ&hl=zh-CN" class="author-chip">
+                        <span>Zitong Huang<sup>1</sup></span>
+                    </a>
+                    <a href="https://scholar.google.com/citations?user=DHgNKnAAAAAJ&hl=zh-CN&oi=sra" class="author-chip">
+                        <span>Guanglei Yang<sup>1</sup></span>
+                    </a>
+                    <a href="https://scholar.google.com/citations?user=tAK5l1IAAAAJ&hl=zh-CN&oi=sra" class="author-chip">
+                        <span>Lei Zhang<sup>2⧺</sup></span>
+                    </a>
+                    <a href="https://scholar.google.com/citations?user=rUOpCEYAAAAJ&hl=zh-CN&oi=sra" class="author-chip">
+                        <span>Wangmeng Zuo<sup>1⧺</sup></span>
+                    </a>
+                </div>
+
+                <!-- Affiliations -->
+                <div class="mdc-typography--body2" style="margin: 16px 0;">
+                    <span><sup>1</sup>Harbin Institute of Technology</span> &nbsp;&nbsp;
+                    <span><sup>2</sup>Hong Kong Polytechnic University</span>
+                    <br>
+                    <span><sup>⧺</sup>Equal Advising</span>
+                </div>
+
+                <!-- Links -->
+                <div style="display: flex; justify-content: center; gap: 16px; margin: 24px 0;">
+                    <a href="data/preprint.pdf" class="mdc-button mdc-button--raised">
+                        <span class="mdc-button__label">Paper</span>
+                    </a>
+                    <a href="https://github.com/DongSky/MR-GDINO" class="mdc-button mdc-button--raised">
+                        <span class="mdc-button__label">Code</span>
+                    </a>
+                </div>
             </div>
-            <div class="tag-cloud-tags">
-              {{ tagcloud({min_font: 12, max_font: 30, amount: 300, color: true, start_color: '#ccc', end_color: '#111'}) }}
+
+            <!-- Overview Section -->
+            <div class="paper-card">
+                <h2 class="section-title" id="overview">Overview</h2>
+                <p class="mdc-typography--body1">
+                    Open-world (OW) models show strong zero- and few-shot adaptation abilities, inspiring their use as initializations in continual learning methods to improve accuracy. Despite promising results on seen classes, such abilities of open-world unseen classes are largely degenerated due to catastrophic forgetting. To formulate and tackle this challenge, we propose open-world continual object detection, requiring detectors to generalize to old, new, and unseen categories in continual learning scenarios. Based on this task, we present OW-COD, a challenging yet practical benchmark to assess detection abilities. The goal is to motivate OW detectors to simultaneously preserve learned classes, adapt to new classes, and maintain open-world capabilities under few-shot adaptations. To mitigate forgetting in unseen categories, we propose MR-GDINO, a strong, efficient and scalable baseline via memory and retrieval mechanisms within a highly scalable memory pool. Experimental results show that existing continual open-world detectors suffer from severe forgetting for both seen and unseen categories. In contrast, MR-GDINO mitigates forgetting with only 0.1\% activated extra parameters, achieving state-of-the-art performance for old, new, and unseen categories.
+                </p>
+                <div style="margin: 32px 0; text-align: center;">
+                    <img src="data/teaser.png" alt="teaser" style="max-width: 100%; height: auto;">
+                </div>
             </div>
-          </div>
-        {% elif page.type === 'categories' %}
-          <div class="category-all-page">
-            <div class="category-all-title">
-                {{ _p('counter.categories', site.categories.length) }}
+
+            <!-- Benchmark Section -->
+            <div class="paper-card">
+                <h2 class="section-title" id="benchmark">OW-COD Benchmark</h2>
+                
+                <div class="subsection-title">Task Definition</div>
+                <p class="mdc-typography--body1">
+                    Open-world continual object detection aims to optimize a pretrained open-world detector <i>f</i> through sequential learning on training sets {<i>D</i><sub>1</sub>, ..., <i>D</i><sub>T</sub>}. The optimized detector should:
+                </p>
+                <ul class="mdc-list">
+                    <li class="mdc-list-item"><b>Preserve</b>: Accurately detect previously learned old classes</li>
+                    <li class="mdc-list-item"><b>Adapt</b>: Effectively learn newly introduced classes</li>
+                    <li class="mdc-list-item"><b>Maintain</b>: Keep strong generalization capabilities on unseen open-world classes</li>
+                </ul>
+
+                <div class="subsection-title">Dataset Construction</div>
+                <p class="mdc-typography--body1">
+                    The benchmark consists of two main components:
+                </p>
+                <ul class="mdc-list">
+                    <li class="mdc-list-item"><b>Seen Categories</b>: Uses ODinW-13 dataset for training and evaluation under few-shot settings</li>
+                    <li class="mdc-list-item"><b>Unseen Categories</b>: Leverages LVIS dataset with its large-scale and diverse label space</li>
+                </ul>
+
+                <div class="subsection-title">Evaluation Metrics</div>
+                <ul class="mdc-list">
+                    <li class="mdc-list-item">
+                        <b>Average Precision (AP)</b>: Reports mean AP for previously learned classes, newly seen classes, and unseen categories
+                    </li>
+                    <li class="mdc-list-item">
+                        <b>Average Rank (R<sup>avg</sup>)</b> : A comprehensive metric that emphasizes balanced performance across all category types
+                    </li>
+                </ul>
             </div>
-            <div class="category-all">
-              {{ list_categories() }}
+
+            <!-- Framework Section -->
+            <div class="paper-card">
+                <h2 class="section-title" id="framework">MR-GDINO Framework</h2>
+                <div style="margin: 32px 0; text-align: center;">
+                    <img src="data/method.png" alt="framework" style="max-width: 100%; height: auto;">
+                </div>
+                <p class="mdc-typography--body1">
+                    MR-GDINO is based on a frozen pretrained open-world object detector with explicit visual-language interaction modules (<i>e.g.</i>, Grounding DINO). During each step <i>t</i> of training, MR-GDINO initializes concept memory θ<sub>t</sub><sub>con</sub> and visual-language interaction memory θ<sub>t</sub><sub>inc</sub> from corresponding parameters in the <i>t</i>-1 step, and optimizes both parameters by <i>t</i>-th training set. After training, θ<sub>t</sub><sub>con</sub> and θ<sub>t</sub><sub>inc</sub> are memorized into the memory pool <b>B</b>. During open-world inference scenarios, MR-GDINO uses the global embedding of input image <b>I</b> to retrieve the optimal parameters (ψ<sup>opt</sup>, θ<sup>opt</sup><sub>con</sub>, θ<sup>opt</sup><sub>inc</sub>) and use these parameters for accurate predictions.
+                </p>
             </div>
-          </div>
-        {% else %}
-          {{ page.content }}
-        {% endif %}
-      </div>
-      {#####################}
-      {### END PAGE BODY ###}
-      {#####################}
+
+
+
+            <!-- Leaderboard Section -->
+            <div class="paper-card">
+                <h2 class="section-title" id="leaderboard">Leaderboards</h2>
+                
+                <!-- 1-shot table -->
+                <div class="subsection-title">1-shot Continual Adaptations</div>
+                <div class="mdc-data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Method</th>
+                                <th>Shots</th>
+                                <th>AP<sup>old</sup></th>
+                                <th>AP<sup>new</sup></th>
+                                <th>AP<sup>seen</sup></th>
+                                <th>AP<sup>unseen</sup></th>
+                                <th>avg rank</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>ZS GDINO</td>
+                                <td>0</td>
+                                <td>35.5</td>
+                                <td>58.8</td>
+                                <td>37.3</td>
+                                <td>20.7</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>CoOp</td>
+                                <td>1</td>
+                                <td>37.9</td>
+                                <td>59.6</td>
+                                <td>39.6</td>
+                                <td>20.5</td>
+                                <td>2.1</td>
+                            </tr>
+                            <tr>
+                                <td>Adapter</td>
+                                <td>1</td>
+                                <td>36.3</td>
+                                <td>55.5</td>
+                                <td>37.7</td>
+                                <td>19.7</td>
+                                <td>3.3</td>
+                            </tr>
+                            <tr>
+                                <td>L2P</td>
+                                <td>1</td>
+                                <td>31.4</td>
+                                <td>59.4</td>
+                                <td>34.0</td>
+                                <td>18.7</td>
+                                <td>3.9</td>
+                            </tr>
+                            <tr>
+                                <td>ZiRa</td>
+                                <td>1</td>
+                                <td>30.9</td>
+                                <td>50.4</td>
+                                <td>32.5</td>
+                                <td>6.9</td>
+                                <td>4.4</td>
+                            </tr>
+                            <tr>
+                                <td>MR-GDINO</td>
+                                <td>1</td>
+                                <td>45.6</td>
+                                <td>58.9</td>
+                                <td>46.7</td>
+                                <td>20.6</td>
+                                <td>1.3</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 3-shot table -->
+                <div class="subsection-title">3-shot Continual Adaptations</div>
+                <div class="mdc-data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Method</th>
+                                <th>Shots</th>
+                                <th>AP<sup>old</sup></th>
+                                <th>AP<sup>new</sup></th>
+                                <th>AP<sup>seen</sup></th>
+                                <th>AP<sup>unseen</sup></th>
+                                <th>avg rank</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>ZS GDINO</td>
+                                <td>0</td>
+                                <td>35.5</td>
+                                <td>58.8</td>
+                                <td>37.3</td>
+                                <td>20.7</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>CoOp</td>
+                                <td>3</td>
+                                <td>17.8</td>
+                                <td>47.1</td>
+                                <td>20.1</td>
+                                <td>19.4</td>
+                                <td>3.6</td>
+                            </tr>
+                            <tr>
+                                <td>Adapter</td>
+                                <td>3</td>
+                                <td>37.4</td>
+                                <td>58.0</td>
+                                <td>39.0</td>
+                                <td>19.4</td>
+                                <td>2.4</td>
+                            </tr>
+                            <tr>
+                                <td>L2P</td>
+                                <td>3</td>
+                                <td>32.6</td>
+                                <td>63.1</td>
+                                <td>35.0</td>
+                                <td>18.8</td>
+                                <td>3.6</td>
+                            </tr>
+                            <tr>
+                                <td>ZiRa</td>
+                                <td>3</td>
+                                <td>32.4</td>
+                                <td>42.4</td>
+                                <td>33.2</td>
+                                <td>7.3</td>
+                                <td>4.2</td>
+                            </tr>
+                            <tr>
+                                <td>MR-GDINO</td>
+                                <td>3</td>
+                                <td>49.9</td>
+                                <td>59.5</td>
+                                <td>50.7</td>
+                                <td>20.6</td>
+                                <td>1.1</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 5-shot table -->
+                <div class="subsection-title">5-shot Continual Adaptations</div>
+                <div class="mdc-data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Method</th>
+                                <th>Shots</th>
+                                <th>AP<sup>old</sup></th>
+                                <th>AP<sup>new</sup></th>
+                                <th>AP<sup>seen</sup></th>
+                                <th>AP<sup>unseen</sup></th>
+                                <th>avg rank</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>ZS GDINO</td>
+                                <td>0</td>
+                                <td>35.5</td>
+                                <td>58.8</td>
+                                <td>37.3</td>
+                                <td>20.7</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>CoOp</td>
+                                <td>5</td>
+                                <td>26.2</td>
+                                <td>61.3</td>
+                                <td>28.9</td>
+                                <td>19.1</td>
+                                <td>3.5</td>
+                            </tr>
+                            <tr>
+                                <td>Adapter</td>
+                                <td>5</td>
+                                <td>37.5</td>
+                                <td>57.6</td>
+                                <td>39.1</td>
+                                <td>20.2</td>
+                                <td>2.5</td>
+                            </tr>
+                            <tr>
+                                <td>L2P</td>
+                                <td>5</td>
+                                <td>29.7</td>
+                                <td>64.4</td>
+                                <td>32.4</td>
+                                <td>17.4</td>
+                                <td>3.7</td>
+                            </tr>
+                            <tr>
+                                <td>ZiRa</td>
+                                <td>5</td>
+                                <td>32.6</td>
+                                <td>62.9</td>
+                                <td>35.1</td>
+                                <td>5.8</td>
+                                <td>4.1</td>
+                            </tr>
+                            <tr>
+                                <td>MR-GDINO</td>
+                                <td>5</td>
+                                <td>49.9</td>
+                                <td>62.0</td>
+                                <td>50.8</td>
+                                <td>20.6</td>
+                                <td>1.3</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 10-shot table -->
+                <div class="subsection-title">10-shot Continual Adaptations</div>
+                <div class="mdc-data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Method</th>
+                                <th>Shots</th>
+                                <th>AP<sup>old</sup></th>
+                                <th>AP<sup>new</sup></th>
+                                <th>AP<sup>seen</sup></th>
+                                <th>AP<sup>unseen</sup></th>
+                                <th>avg rank</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>ZS GDINO</td>
+                                <td>0</td>
+                                <td>35.5</td>
+                                <td>58.8</td>
+                                <td>37.3</td>
+                                <td>20.7</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>CoOp</td>
+                                <td>10</td>
+                                <td>31.7</td>
+                                <td>62.7</td>
+                                <td>34.5</td>
+                                <td>17.0</td>
+                                <td>3.7</td>
+                            </tr>
+                            <tr>
+                                <td>Adapter</td>
+                                <td>10</td>
+                                <td>35.6</td>
+                                <td>58.2</td>
+                                <td>37.3</td>
+                                <td>20.4</td>
+                                <td>2.7</td>
+                            </tr>
+                            <tr>
+                                <td>L2P</td>
+                                <td>10</td>
+                                <td>23.8</td>
+                                <td>61.8</td>
+                                <td>26.8</td>
+                                <td>17.8</td>
+                                <td>3.9</td>
+                            </tr>
+                            <tr>
+                                <td>ZiRa</td>
+                                <td>10</td>
+                                <td>38.5</td>
+                                <td>63.2</td>
+                                <td>40.4</td>
+                                <td>6.9</td>
+                                <td>4.0</td>
+                            </tr>
+                            <tr>
+                                <td>MR-GDINO</td>
+                                <td>10</td>
+                                <td>51.3</td>
+                                <td>59.7</td>
+                                <td>51.9</td>
+                                <td>20.7</td>
+                                <td>1.3</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Video Section -->
+            <div class="paper-card">
+                <h2 class="section-title">Visualization</h2>
+                <div style="margin: 32px 0; text-align: center;">
+                    <img src="data/vis.png" alt="teaser" style="max-width: 100%; height: auto;">
+                </div>
+            </div>
+
+            <div class="paper-card"></div>
+                <h2 class="section-title">Demo on Custom Data</h2>
+                <p class="mdc-typography--body1"></p>
+                    When facing custom data, MR-GDINO should enables two things. First is accurately detecting newly seen categories, these categories usually represent "preferred concepts" (for example, when detecting Dva, MR-GDINO should assign Dva tag rather than person). Second is detecting unseen objects defined in label space. MR-GDINO performs well.
+                </p>
+                <div style="margin: 32px 0; text-align: center;">
+                    <img src="data/custom.png" alt="teaser" style="max-width: 100%; height: auto;">
+                </div>
+            </div>
+
+            <!-- Citation Section -->
+            <div class="paper-card">
+                <h2 class="section-title">Citation</h2>
+                <div class="citation-card">
+                    <button class="mdc-button mdc-button--raised" style="position: absolute; top: 8px; right: 8px;" onclick="copyCitation()">
+                        <span class="mdc-button__label">Copy</span>
+                    </button>
+                    <pre id="citation" class="mdc-typography--body2">
+@article{owcod,
+    author = {Dong, Bowen and Huang, Zitong and Yang, Guanglei and Zhang, Lei and Zuo, Wangmeng},
+    title = {MR-GDINO: Efficient Open-World Continual Object Detection},
+    year = {2024},
+}</pre>
+                </div>
+                <script>
+                function copyCitation() {
+                    const citation = document.getElementById('citation').innerText;
+                    navigator.clipboard.writeText(citation);
+                    const button = document.querySelector('.citation-card button');
+                    const originalText = button.innerText;
+                    button.innerText = 'Copied!';
+                    setTimeout(() => {
+                        button.innerText = originalText;
+                    }, 2000);
+                }
+                </script>
+            </div>
+        </div>
     </div>
-    {######################}
-    {### END PAGE BLOCK ###}
-    {######################}
-  </div>
 
-{% endblock %}
+    <script>
+        // Initialize Material Components
+        mdc.autoInit();
 
-{% block sidebar %}
-  {{ sidebar_template.render(false) }}
-{% endblock %}
+        // Add table highlighting
+        document.querySelectorAll('.mdc-data-table td').forEach(cell => {
+            if (cell.classList.contains('highlight-cell')) {
+                cell.style.fontWeight = 'bold';
+                cell.style.color = '#1976d2';
+            }
+            if (cell.classList.contains('underline-cell')) {
+                cell.style.textDecoration = 'underline';
+            }
+        });
 
-{% block script_extra %}
-  {% include '_scripts/pages/post-details.swig' %}
-{% endblock %}
+        // 添加滚动动画
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // 添加表格行悬停效果
+        document.querySelectorAll('.mdc-data-table tr').forEach(row => {
+            row.addEventListener('mouseover', function() {
+                this.style.backgroundColor = 'rgba(25, 118, 210, 0.04)';
+            });
+            row.addEventListener('mouseout', function() {
+                this.style.backgroundColor = '';
+            });
+        });
+
+        // 添加图片点击放大效果
+        document.querySelectorAll('.image-container img').forEach(img => {
+            img.addEventListener('click', function() {
+                if (this.style.transform === 'scale(1.5)') {
+                    this.style.transform = 'scale(1)';
+                } else {
+                    this.style.transform = 'scale(1.5)';
+                }
+            });
+        });
+    </script>
+
+    <!-- 添加响应式样式 -->
+    <style>
+        @media (max-width: 768px) {
+            .mdc-data-table {
+                overflow-x: auto;
+            }
+            
+            .paper-card {
+                padding: 16px;
+            }
+            
+            .section-title {
+                font-size: 1.5rem;
+            }
+            
+            .subsection-title {
+                font-size: 1.2rem;
+            }
+        }
+
+        /* 添加过渡动画 */
+        .paper-card {
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .paper-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .author-chip {
+            transition: all 0.2s ease-in-out;
+        }
+
+        .author-chip:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+    </style>
+</body>
+</html>
