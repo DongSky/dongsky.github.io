@@ -1,0 +1,84 @@
+\section{Open-World Continual Object Detection}\label{sec:data}
+\subsection{Task Definition}\label{sec:data_task}
+Building upon COD and OWOD, we formulate the open-world continual object detection task. 
+%
+Given a open-world (OW) object detector $f$ pretrained on a large-scale dataset $\mathbb{D}_{\text{pre}}$, as well as a sequence of training set $\{\mathbb{D}_{1}, \dots, \mathbb{D}_{K}\}$ with size of $T$, 
+%
+we aim to optimize $f$ with corresponding parameters $\theta_{f}$ by sequentially learning on each $\mathbb{D}_{i}$. 
+%
+Such that the optimized $f(\cdot;\theta_{f})$ enables to accurately detect both previously learned old classes $\mathbb{C}_{1}\cup \dots \cup\mathbb{C}_{T\text{-}1}$ and newly learned classes $\mathbb{C}_{T}$, where $\mathbb{C}_{i}$ represents the label set of corresponding $\mathbb{D}_{i}$.
+%
+Meanwhile, $f(\cdot;\theta_{f})$ should be generalize well on open-world evaluation dataset $\mathbb{D}^{\text{val}}_{\text{unseen}}$ with corresponding large-scale and diverse label space $\mathbb{C}_{\text{unseen}}$.
+%
+The goal of our proposed task is to motivate OW detectors to simultaneously {\textbf{preserve} learned classes, \textbf{adapt} to new classes, and \textbf{maintain} open-world capabilities}, which is critical for OW detectors to simultaneously adapt to varying new environment and keep generalization abilities.
+
+\subsection{Benchmark Construction}\label{sec:data_construct}
+
+% \yang{
+After defining the task, we outline the construction of {\dataset}. 
+ For the data associated with seen categories, ODinW-13~\cite{li2021grounded} is used as the training and evaluation subset. Notably, to simulate practical fast adaptation scenarios and increase the challenge of the benchmark, a few-shot training setting is adopted in {\dataset}. This setting requires continual OW detectors to effectively mitigate the impact of both overfitting and catastrophic forgetting, thereby enabling robust detection abilities for old, new, and unseen categories.
+
+For open-world unseen data, to better align with real-world deployment scenarios, LVIS~\cite{gupta2019lvis} is leveraged to empirically assess detection performance for unseen classes. Leveraging the dataset's large-scale and highly diverse label space facilitates empirical analysis of anti-forgetting abilities for unseen classes under continual adaptation.
+% }
+
+% After defining our task, we state the construction of {\dataset}. For seen categories data, we employ ODinW-13~\cite{li2021grounded} as the training and evaluation subsets. Notably, to effectively simulate the practical fast adaptation scenarios and make the benchmark more challenging, we adopt few-shot training settings in {\dataset}, which requires the continual OW detectors manage to reduce the effect from both overfitting and catastrophic forgetting, thus achieving promising detection abilities for old, new, and unseen categories. 
+% And for open-world unseen data, to properly fit the realistic scenarios in deployment, we leverage LVIS~\cite{gupta2019lvis} dataset to empirically assess the detection performance of unseen classes. benefited from extremely large-scale and highly diverse label space, one can empirically analyze the anti-forgetting capabilities on unseen classes under continual adaptations.
+
+\subsection{Metrics of {\dataset}}\label{sec:data_metric}
+% To empirically assess the detection performance of old, new, and unseen categories under continual learning paradigm, {\dataset} incorporates the following metrics to measure the capabilities of learned OW detectors against catastrophic forgetting and rank all models. 
+
+\noindent\textbf{Average Precision. }
+Following the work on continual object detection~\cite{dong2023incremental,liu2023continual,deng2024zero,zhang2024dynamic} and open-world object detection~\cite{li2021grounded,wang2024ov,zhang2022glipv2,bansal2018zero,ma2022open}, the mean average precision (mAP) is reported for each subset to quantitatively assess the performance of learned open-world (OW) detectors under the continual learning paradigm. Specifically, per-subset average precision (AP) is provided to evaluate the detection performance of continual OW detectors after few-shot continual adaptations. Additionally, the mean AP for previously learned, newly seen, and unseen categories is reported to summarize the overall performance.
+% Following continual object detection~\cite{dong2023incremental,liu2023continual,deng2024zero,zhang2024dynamic} and open-world object detection~\cite{li2021grounded,wang2024ov,zhang2022glipv2,bansal2018zero,ma2022open}, we report the mean average precision (mAP) for each subset to quantitatively assess the performance of learned OW detectors under continual learning paradigm. 
+% %
+% Specifically, we report per-subset AP to assess the detection performance of continual OW detectors after few-shot continual adaptations,
+% and also report mean AP of previously learned, newly seen, and unseen categories respectively to summarize overall performance. 
+% Moreover, we also report the performance degradation due to forgetting to measure the forgetting rate on all subsets. 
+% 
+% AP is the fundamental metric to clearly measure the performance gap.
+% between different continual OW detectors. 
+% \paragraph{Average Precision of open-world unseen categories. }
+
+\noindent\textbf{Average rank. }Inspired by previous benchmarks~\cite{zhai2019large,li2021grounded}, {\dataset} also incorporates average rank as auxiliary metric to measure the relative performance of existing continual OW detectors. 
+%
+% Genearlly, we 
+%
+% Specifically, {\dataset} first ranks all models within each subset. Then for all the {K} subsets regarding seen categories, we denote the rank of $i$-th subset from $j$-th detector as $R^{i}_{j}$. Therefore, we define corresponding average rank of seen categories $R^{\text{seen}}_{j}$ by:
+Specifically, {\dataset} first ranks all models within each subset. For the $K$ subsets of seen categories, let $R^i_j$ denote the rank of the $i$-th subset by the $j$-th detector. The average rank of seen categories $R^{\text{seen}}_j$ is then defined as:
+\vspace{-0.5em}
+\begin{equation}
+\vspace{-0.5em}
+    R^{\text{seen}}_{j} = \frac{\sum_{i=1}^{K}R^{i}_{j}}{K}.
+\end{equation}
+Similarly, we define the unseen classes average rank $R^{\text{unseen}}_{j}$ for $j$-th detector.
+%
+Finally, overall rank $R^{\text{avg}}_{j}$ is calculated by:
+\vspace{-0.5em}
+\begin{equation}
+\vspace{-0.5em}
+    R^{\text{avg}}_{j} = \sqrt{ \frac{{R^{\text{seen}}_{j}}^{2}+{R^{\text{unseen}}_{j}}^{2}}{2}}.
+\end{equation}
+The merit of this ranking lies in the fact that a detector can achieve a higher rank only if it performs well on both seen and unseen categories, thus emphasizing its ability to mitigate catastrophic forgetting for both old and new classes.
+% The merit of this rank is that, a detector can achieve higher rank if and only if it performs well on both seen and unseen categories, emphasizing the anti-catastrophic forgetting abilities of both old and unseen classes. 
+% \textbf{Merit. }This rank ensures that a detector achieves a higher score only if it performs well on both seen and unseen categories, highlighting its resistance to catastrophic forgetting for both old and new classes.
+
+
+
+
+\subsection{Relation with Counterparts}\label{sec:data_relation}
+\noindent\textbf{Comparison with COD. }
+% COD~\cite{dong2023incremental,liu2023continual,deng2024zero,zhang2024dynamic} naively splits annotations in the whole detection dataset (\emph{e.g.}, COCO~\cite{lin2014microsoft}) by dividing labels set into different groups, and constructs the corresponding benchmark. Nevertheless, such benchmarks are not practical, since objects of novel categories usually occur in unseen scenarios in practical applications~\cite{wang2021wanderlust,continual_autodrive}, while objects in seen images should be fully annotated~\cite{objects365,lin2014microsoft,wang2023v3det}. That is the motivation of our benchmark. 
+% %
+% Moreover, as the wide deployment of OW detectors in continual learning scenarios, {\dataset} further emphasizes the anti-forgetting capabilities of unseen categories to preserve the generalization ability, while traditional COD only concerns seen categories. 
+COD~\cite{dong2023incremental,liu2023continual,deng2024zero,zhang2024dynamic} typically split annotations from entire datasets (\emph{e.g.}, COCO~\cite{lin2014microsoft}) by dividing label sets into groups, which is not practical since novel categories often appear in unseen scenarios~\cite{wang2021wanderlust,continual_autodrive}, and seen images are usually fully labeled~\cite{objects365,lin2014microsoft,wang2023v3det} during annotation. {\method} avoids such irregular scenario.%This limitation motivates our benchmark.
+Besides, with the growing use of OW models in continual learning~\cite{yu2024boosting,wang2022learning}, {\dataset} emphasizes anti-forgetting capabilities for unseen categories. %to maintain generalization.
+% , unlike traditional COD, which focuses only on seen categories.
+
+\noindent\textbf{Comparison with OWOD. }OWOD~\cite{li2021grounded,wang2024ov,zhang2022glipv2,bansal2018zero,ma2022open} can be seen as a zero-shot special case of our task. In contrast, {\dataset} simultaneously emphasizes the anti-forgetting capabilities among old, new, and unseen categories, which largely requires the generalization of OW detectors.
+
+\noindent\textbf{Comparison with Deng \emph{et al.} }
+% Deng \emph{et al.}~\cite{deng2024zero} made some early exploration regarding open-world continual learning. Nevertheless, the drawback is two-fold. Firstly, the OW detector is evaluated under task-incremental setting, \emph{i.e.}, the label space of input images in known during inference, which is not practical in applications and decreases the difficulty for continual OW detectors. And secondly, using COCO~\cite{lin2014microsoft} as open-world evaluation is trivial since it has only 80 common categories, which usually occur in continual learning steps. 
+% Deng \emph{et al.}\cite{deng2024zero} conducted initial studies on open-world continual learning. However, it has two main drawbacks. First, the task-incremental evaluation is impractical for real-world applications and simplifies the challenge for continual OW detectors. Second, their use of COCO\cite{lin2014microsoft} for OW evaluation is limited due to its 80 common classes, which frequently appear across continual learning steps, reducing the complexity of the task.
+% \yang{
+Deng \emph{et al.}\cite{deng2024zero} conducted initial studies on open-world continual learning. However, their approach has two main drawbacks. First, the task-incremental evaluation is impractical for real-world applications and oversimplifies the challenge for continual open-world (OW) detectors. Second, their use of COCO~\cite{lin2014microsoft} for OW evaluation is limited, as it contains only 80 common classes that frequently recur across continual learning steps, thereby reducing the task's complexity.
+% }
