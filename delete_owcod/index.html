@@ -1,9 +1,264 @@
 <!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Han">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="MR-GDINO: Efficient Open-World Continual Object Detection                              window.dataLayer &#x3D; window.dataLayer || [];         function gtag() { dataLayer.push(arguments); }">
+<meta property="og:type" content="website">
+<meta property="og:title" content="SensePort">
+<meta property="og:url" content="https://dongsky.github.io/delete_owcod/index.html">
+<meta property="og:site_name" content="SensePort">
+<meta property="og:description" content="MR-GDINO: Efficient Open-World Continual Object Detection                              window.dataLayer &#x3D; window.dataLayer || [];         function gtag() { dataLayer.push(arguments); }">
+<meta property="og:locale">
+<meta property="og:image" content="https://dongsky.github.io/delete_owcod/index/teaser.png">
+<meta property="og:image" content="https://dongsky.github.io/delete_owcod/index/method.png">
+<meta property="og:image" content="https://dongsky.github.io/delete_owcod/index/vis.png">
+<meta property="og:image" content="https://dongsky.github.io/delete_owcod/index/custom.png">
+<meta property="article:published_time" content="2024-12-20T15:31:45.606Z">
+<meta property="article:modified_time" content="2024-12-20T15:31:45.606Z">
+<meta property="article:author" content="DongSky">
+<meta property="article:tag" content="ComputerVison">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://dongsky.github.io/delete_owcod/index/teaser.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://dongsky.github.io/delete_owcod/"/>
+
+
+
+
+
+  <title> | SensePort</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Han">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">SensePort</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">DongSky's Geek Space</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+    
+    
+    <div class="post-block page">
+      <header class="post-header">
+
+	<h1 class="post-title" itemprop="name headline"></h1>
+
+
+
+</header>
+
+      
+      
+      
+      <div class="post-body">
+        
+        
+          <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8">
     <title>MR-GDINO: Efficient Open-World Continual Object Detection</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
 
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-FYQNRK8LHK"></script>
@@ -241,7 +496,7 @@
                 
                 <!-- Authors -->
                 <div class="author-section">
-                    <a href="" class="author-chip" onclick="alert('?')">
+                    <a href class="author-chip" onclick="alert('?')">
                         <span>Bowen Dong<sup>1,2</sup></span>
                     </a>
                     <a href="https://scholar.google.com/citations?user=WHVC7kkAAAAJ&hl=zh-CN" class="author-chip">
@@ -287,7 +542,7 @@
                     Open-world (OW) models show strong zero- and few-shot adaptation abilities, inspiring their use as initializations in continual learning methods to improve accuracy. Despite promising results on seen classes, such abilities of open-world unseen classes are largely degenerated due to catastrophic forgetting. To formulate and tackle this challenge, we propose open-world continual object detection, requiring detectors to generalize to old, new, and unseen categories in continual learning scenarios. Based on this task, we present OW-COD, a challenging yet practical benchmark to assess detection abilities. The goal is to motivate OW detectors to simultaneously preserve learned classes, adapt to new classes, and maintain open-world capabilities under few-shot adaptations. To mitigate forgetting in unseen categories, we propose MR-GDINO, a strong, efficient and scalable baseline via memory and retrieval mechanisms within a highly scalable memory pool. Experimental results show that existing continual open-world detectors suffer from severe forgetting for both seen and unseen categories. In contrast, MR-GDINO mitigates forgetting with only 0.1\% activated extra parameters, achieving state-of-the-art performance for old, new, and unseen categories.
                 </p>
                 <div style="margin: 32px 0; text-align: center;">
-                    <img src="data/teaser.png" alt="teaser" style="max-width: 100%; height: auto;">
+                    <img src="/delete_owcod/index/teaser.png" alt="teaser" style="max-width: 100%; height: auto;">
                 </div>
             </div>
 
@@ -329,7 +584,7 @@
             <div class="paper-card">
                 <h2 class="section-title" id="framework">MR-GDINO Framework</h2>
                 <div style="margin: 32px 0; text-align: center;">
-                    <img src="data/method.png" alt="framework" style="max-width: 100%; height: auto;">
+                    <img src="/delete_owcod/index/method.png" alt="framework" style="max-width: 100%; height: auto;">
                 </div>
                 <p class="mdc-typography--body1">
                     MR-GDINO is based on a frozen pretrained open-world object detector with explicit visual-language interaction modules (<i>e.g.</i>, Grounding DINO). During each step <i>t</i> of training, MR-GDINO initializes concept memory θ<sub>t</sub><sub>con</sub> and visual-language interaction memory θ<sub>t</sub><sub>inc</sub> from corresponding parameters in the <i>t</i>-1 step, and optimizes both parameters by <i>t</i>-th training set. After training, θ<sub>t</sub><sub>con</sub> and θ<sub>t</sub><sub>inc</sub> are memorized into the memory pool <b>B</b>. During open-world inference scenarios, MR-GDINO uses the global embedding of input image <b>I</b> to retrieve the optimal parameters (ψ<sup>opt</sup>, θ<sup>opt</sup><sub>con</sub>, θ<sup>opt</sup><sub>inc</sub>) and use these parameters for accurate predictions.
@@ -643,7 +898,7 @@
             <div class="paper-card">
                 <h2 class="section-title">Visualization</h2>
                 <div style="margin: 32px 0; text-align: center;">
-                    <img src="data/vis.png" alt="teaser" style="max-width: 100%; height: auto;">
+                    <img src="/delete_owcod/index/vis.png" alt="teaser" style="max-width: 100%; height: auto;">
                 </div>
             </div>
 
@@ -651,9 +906,9 @@
                 <h2 class="section-title">Demo on Custom Data</h2>
                 <p class="mdc-typography--body1"></p>
                     When facing custom data, MR-GDINO should enables two things. First is accurately detecting newly seen categories, these categories usually represent "preferred concepts" (for example, when detecting Dva, MR-GDINO should assign Dva tag rather than person). Second is detecting unseen objects defined in label space. MR-GDINO performs well.
-                </p>
+                <p></p>
                 <div style="margin: 32px 0; text-align: center;">
-                    <img src="data/custom.png" alt="teaser" style="max-width: 100%; height: auto;">
+                    <img src="/delete_owcod/index/custom.png" alt="teaser" style="max-width: 100%; height: auto;">
                 </div>
             </div>
 
@@ -685,7 +940,7 @@
                 </script>
             </div>
         </div>
-    </div>
+    
 
     <script>
         // Initialize Material Components
@@ -772,5 +1027,416 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
     </style>
+</body>
+</html>
+
+        
+      </div>
+      
+      
+      
+    </div>
+    
+    
+    
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/DongSky" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://touko.moe/" title="Touko" target="_blank">Touko</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://alxnagami.me/" title="哇欧根" target="_blank">哇欧根</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://akaisora.tech/" title="Akaisora" target="_blank">Akaisora</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://mistakey.top/" title="叶月辉夜" target="_blank">叶月辉夜</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://wwyqianqian.github.io/" title="千千" target="_blank">千千</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">MR-GDINO: Efficient Open-World Continual Object Detection</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#overview"><span class="nav-number">1.1.</span> <span class="nav-text">Overview</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#benchmark"><span class="nav-number">1.2.</span> <span class="nav-text">OW-COD Benchmark</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#framework"><span class="nav-number">1.3.</span> <span class="nav-text">MR-GDINO Framework</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#leaderboard"><span class="nav-number">1.4.</span> <span class="nav-text">Leaderboards</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">1.5.</span> <span class="nav-text">Visualization</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">1.6.</span> <span class="nav-text">Demo on Custom Data</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">1.7.</span> <span class="nav-text">Citation</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">DongSky</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://dongsky.github.io/gitment/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: window.location.pathname, 
+            owner: 'DongSky',
+            repo: 'dongsky.github.io',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '65da2b65fa8386d28a47d8b317551927caec8005',
+            
+                client_id: '83af58a023dd27a78c9a'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
 </body>
 </html>
