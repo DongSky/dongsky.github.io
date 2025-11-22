@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>AEGIS: Exploring the Limit of World Knowledge Capabilities for Unified Multimodal Models</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+    <meta name="description" content="AEGIS: A comprehensive multi-task benchmark for unified multimodal models covering visual understanding, generation, editing, and interleaved generation.">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="data/aegis-meme.png">
+
+    <!-- Material Design Dependencies -->
+    <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            --mdc-theme-primary: #2c3e50;
+            --mdc-theme-secondary: #e74c3c;
+            --mdc-theme-background: #fafafa;
+            --mdc-theme-surface: #ffffff;
+            --mdc-typography-font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--mdc-theme-background);
+            font-family: var(--mdc-typography-font-family);
+            color: rgba(0, 0, 0, 0.87);
+            line-height: 1.6;
+        }
+
+        .mdc-top-app-bar {
+            position: fixed;
+            background-color: var(--mdc-theme-surface);
+            color: rgba(0, 0, 0, 0.87);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .main-content {
+            padding-top: 64px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .paper-card {
+            background: var(--mdc-theme-surface);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 32px;
+            margin-bottom: 32px;
+        }
+
+        .title-section {
+            text-align: center;
+            padding: 40px 24px;
+        }
+
+        .author-section {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin: 24px 0;
+        }
+
+        .author-chip {
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: #f0f2f5;
+            color: #1a73e8;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .author-chip:hover {
+            background: #e8f0fe;
+            transform: translateY(-1px);
+        }
+
+        .affiliation-section {
+            font-size: 0.9rem;
+            color: #5f6368;
+            margin-top: 16px;
+        }
+
+        .mdc-data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 24px 0;
+            background: white;
+            border-radius: 8px;
+            overflow-x: auto;
+            display: block;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        /* Make table readable */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px; /* Ensure table doesn't crunch too much */
+        }
+
+        .mdc-data-table th,
+        .mdc-data-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(0,0,0,0.12);
+            text-align: center;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+        
+        .mdc-data-table td:first-child, 
+        .mdc-data-table th:first-child {
+            text-align: left;
+            position: sticky;
+            left: 0;
+            background: white;
+            z-index: 2;
+            font-weight: 500;
+            border-right: 2px solid rgba(0,0,0,0.1);
+            min-width: 160px;
+        }
+
+        .mdc-data-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #202124;
+        }
+
+        /* Header specific styles */
+        .header-group {
+            background-color: #e8f0fe !important;
+            border-bottom: 1px solid #dadce0;
+        }
+
+        .category-row {
+            background-color: #f1f3f4;
+            font-weight: 700;
+            text-align: center; /* Changed to center */
+            color: #5f6368;
+            padding-left: 0 !important; /* Removed padding-left */
+        }
+
+        .mdc-data-table tr:hover {
+            background-color: rgba(0,0,0,0.02);
+        }
+
+        .mdc-data-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .gray-cell {
+            color: #ccc;
+        }
+        
+        /* SOTA row highlight */
+        .sota-row {
+            background-color: #f0f7ff;
+        }
+        .sota-row td {
+            font-weight: 500;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 400;
+            color: #202124;
+            margin: 0 0 24px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e8eaed;
+        }
+
+        .subsection-title {
+            font-size: 1.35rem;
+            font-weight: 500;
+            color: #202124;
+            margin: 32px 0 16px;
+        }
+        
+        .highlight-text {
+            font-weight: 500;
+            color: var(--mdc-theme-primary);
+        }
+
+        .badge-container {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .badge-blue { background: #e8f0fe; color: #1967d2; }
+        .badge-green { background: #e6f4ea; color: #137333; }
+        .badge-orange { background: #fef7e0; color: #ea8600; }
+
+        .teaser-img {
+            width: 100%;
+            border-radius: 8px;
+            margin: 16px 0;
+            border: 1px solid #dadce0;
+        }
+        
+        .caption {
+            text-align: center;
+            color: #5f6368;
+            font-size: 0.9rem;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        .list-check {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .list-check li {
+            position: relative;
+            padding-left: 32px;
+            margin-bottom: 12px;
+        }
+        
+        .list-check li::before {
+            content: 'check_circle';
+            font-family: 'Material Icons';
+            position: absolute;
+            left: 0;
+            top: 2px;
+            color: var(--mdc-theme-secondary);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .section-title { font-size: 1.75rem; }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Top App Bar -->
+    <header class="mdc-top-app-bar">
+        <div class="mdc-top-app-bar__row">
+            <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+                <span class="mdc-top-app-bar__title">AEGIS Benchmark</span>
+            </section>
+            <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end">
+                <a href="#abstract" class="mdc-top-app-bar__action-item">Abstract</a>
+                <a href="#motivation" class="mdc-top-app-bar__action-item">Motivation</a>
+                <a href="#method" class="mdc-top-app-bar__action-item">Method</a>
+                <a href="#results" class="mdc-top-app-bar__action-item">Results</a>
+                <a href="#findings" class="mdc-top-app-bar__action-item">Findings</a>
+                <a href="#demo" class="mdc-top-app-bar__action-item">Demo</a>
+            </section>
+        </div>
+    </header>
+
+    <div class="main-content">
+        <div class="container">
+            <!-- Title Section -->
+            <div class="paper-card title-section">
+                <h1 class="mdc-typography--headline4" style="font-weight: 700;">AEGIS: Exploring the Limit of World Knowledge Capabilities for Unified Multimodal Models</h1>
+                
+                <!-- Authors -->
+                <div class="author-section">
+                    <a href="#" class="author-chip">Jintao Lin<sup>1</sup></a>
+                    <a href="#" class="author-chip">Bowen Dong<sup>2*</sup></a>
+                    <a href="#" class="author-chip">Weikang Shi<sup>3</sup></a>
+                    <a href="#" class="author-chip">Chenyang Lei<sup>4</sup></a>
+                    <a href="#" class="author-chip">Suiyun Zhang<sup>4</sup></a>
+                    <a href="#" class="author-chip">Rui Liu<sup>4</sup></a>
+                    <a href="#" class="author-chip">Xihui Liu<sup>1†</sup></a>
+                </div>
+
+                <!-- Affiliations -->
+                <div class="affiliation-section">
+                    <div><sup>1</sup>University of Hong Kong &nbsp;&nbsp; <sup>2</sup>The Hong Kong Polytechnic University</div>
+                    <div><sup>3</sup>The Chinese University of Hong Kong &nbsp;&nbsp; <sup>4</sup>Huawei Research</div>
+                    <div style="margin-top: 8px; font-size: 0.8rem;">*Equal contribution, in random order &nbsp;&nbsp; †Corresponding author</div>
+                </div>
+
+                <!-- Links -->
+                <div style="display: flex; justify-content: center; gap: 16px; margin: 32px 0;">
+                    <a href="#" class="mdc-button mdc-button--raised">
+                        <i class="material-icons mdc-button__icon" aria-hidden="true">description</i>
+                        <span class="mdc-button__label">arXiv Paper</span>
+                    </a>
+                    <a href="#" class="mdc-button mdc-button--outlined">
+                        <i class="material-icons mdc-button__icon" aria-hidden="true">code</i>
+                        <span class="mdc-button__label">Code & Data</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Abstract Section -->
+            <div class="paper-card" id="abstract">
+                <h2 class="section-title">Abstract</h2>
+                <div style="text-align: center;">
+                    <!-- Teaser Image -->
+                    <div style="background-color: #f1f3f4; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-bottom: 24px;">
+                        <img src="data/teaser.png" alt="AEGIS benchmark illustration" style="max-width: 100%; max-height: 400px; object-fit: contain;">
+                    </div>
+                    <p class="caption">
+                        Figure 1. Illustration of AEGIS benchmark covering visual understanding, generation, editing, and interleaved generation tasks.
+                    </p>
+                </div>
+                <p class="mdc-typography--body1" style="text-align: justify;">
+                    The capability of Unified Multimodal Models (UMMs) to apply world knowledge across diverse tasks remains a critical, unresolved challenge. Existing benchmarks fall short, offering only siloed, single-task evaluations with limited diagnostic power. To bridge this gap, we propose <strong>AEGIS</strong> (Assessing Editing, Generation, Interpretation-Understanding for Super-intelligence), a comprehensive multi-task benchmark covering visual understanding, generation, editing, and interleaved generation. AEGIS comprises 1,050 challenging, manually-annotated questions spanning 21 topics (including STEM, humanities, daily life) and 6 reasoning types. To concretely evaluate UMM performance without ambiguous metrics, we propose <strong>Deterministic Checklist-based Evaluation (DCE)</strong>, a protocol utilizing atomic "Y/N" judgments. Our extensive experiments reveal that most UMMs exhibit severe world knowledge deficits and performance degrades significantly with complex reasoning.
+                </p>
+            </div>
+
+            <!-- Motivation & Highlights Section -->
+            <div class="paper-card" id="motivation">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px;">
+                    <div>
+                        <h2 class="section-title">Motivation</h2>
+                        <p class="mdc-typography--body1">
+                            Real-world applications require AI to handle diverse requests demanding sophisticated reasoning and world knowledge. However, current benchmarks suffer from three fundamental limitations:
+                        </p>
+                        <ul class="mdc-list">
+                            <li class="mdc-list-item">
+                                <span class="mdc-list-item__text"><strong>Siloed Evaluation:</strong> Confined to single-task assessments, failing to measure inter-task gaps in UMMs.</span>
+                            </li>
+                            <li class="mdc-list-item">
+                                <span class="mdc-list-item__text"><strong>Lack of Diagnostics:</strong> Difficult to discern whether failures stem from understanding (LLM) or generation modules.</span>
+                            </li>
+                            <li class="mdc-list-item">
+                                <span class="mdc-list-item__text"><strong>Limited Scope:</strong> Inadequate coverage of "corner knowledge" and complex reasoning capabilities.</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h2 class="section-title">Highlights</h2>
+                        <ul class="list-check">
+                            <li>
+                                <strong>Comprehensive Multi-Task Benchmark:</strong> Assesses Visual Understanding, Generation, Editing, and Interleaved Generation simultaneously.
+                            </li>
+                            <li>
+                                <strong>Extensive Knowledge Coverage:</strong> 1,050 questions across 21 topics (STEM, Humanities, Daily Life) and 6 reasoning types.
+                            </li>
+                            <li>
+                                <strong>Deterministic Evaluation (DCE):</strong> A novel checklist-based protocol that replaces ambiguous scores with atomic "Yes/No" judgments for reliability.
+                            </li>
+                            <li>
+                                <strong>In-depth Diagnosis:</strong> Reveals severe world knowledge deficits in SOTA UMMs and the impact of reasoning complexity.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Methodology Section -->
+            <div class="paper-card" id="method">
+                <h2 class="section-title">Methodology: AEGIS & DCE</h2>
+                
+                <div class="subsection-title">1. AEGIS Dataset Construction</div>
+                <p class="mdc-typography--body1">
+                    We constructed AEGIS using a rigorous human-in-the-loop pipeline. The dataset is structured around:
+                </p>
+                <div class="badge-container">
+                    <span class="badge badge-blue">3 Domains: STEM, Humanities, Daily Life</span>
+                    <span class="badge badge-green">21 Topics</span>
+                    <span class="badge badge-orange">6 Reasoning Types</span>
+                </div>
+                <p class="mdc-typography--body1">
+                    <strong>Reasoning Types:</strong> Spatial, Temporal, Causal, Comparative, Analogical, and Logical reasoning. Each prompt is designed to be "Reasoning-Enhanced" to mimic real-world complexity.
+                </p>
+
+                <div class="subsection-title">2. Deterministic Checklist-based Evaluation (DCE)</div>
+                <p class="mdc-typography--body1">
+                    To overcome the ambiguity of standard "LLM-as-a-Judge" scoring, DCE decomposes evaluation into verifiable steps:
+                </p>
+                <ol class="mdc-typography--body1">
+                    <li><strong>Checklist Generation:</strong> An MLLM (e.g., Gemini) generates a set of atomic "Yes/No" questions based on reference answers and keywords.</li>
+                    <li><strong>Deterministic Judgment:</strong> A judge model evaluates the model's response against each item in the checklist.</li>
+                    <li><strong>Scoring:</strong> The final score is the percentage of "Yes" judgments, ensuring concrete and reliable metrics.</li>
+                </ol>
+                
+                <div style="text-align: center; margin-top: 24px;">
+                    <!-- Method Image -->
+                    <div style="background-color: #f8f9fa; display: flex; align-items: center; justify-content: center; border-radius: 8px; border: 1px dashed #ccc;">
+                        <img src="data/pipeline.png" alt="AEGIS data construction and DCE pipeline" style="max-width: 100%; max-height: 500px; object-fit: contain;">
+                    </div>
+                    <p class="caption">Figure 2. The pipeline of AEGIS data construction and Deterministic Checklist-based Evaluation (DCE).</p>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="paper-card" id="results">
+                <h2 class="section-title">Main Experiment Results</h2>
+                <p class="mdc-typography--body1">
+                    We evaluated various Unified Multimodal Models (UMMs) and Single-Task Generative Models. Below is the overall performance comparison.
+                </p>
+
+                <div class="mdc-data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th rowspan="2">Model</th>
+                                <th colspan="3" class="header-group">Understanding</th>
+                                <th colspan="3" class="header-group">Generation</th>
+                                <th colspan="3" class="header-group">Editing</th>
+                                <th colspan="3" class="header-group">Interleaved Generation</th>
+                                <th rowspan="2">Overall</th>
+                            </tr>
+                            <tr>
+                                <!-- Subheaders -->
+                                <th style="font-size: 0.8rem; color: #666;">STEM</th>
+                                <th style="font-size: 0.8rem; color: #666;">Humanity</th>
+                                <th style="font-size: 0.8rem; color: #666;">Life</th>
+                                <th style="font-size: 0.8rem; color: #666;">STEM</th>
+                                <th style="font-size: 0.8rem; color: #666;">Humanity</th>
+                                <th style="font-size: 0.8rem; color: #666;">Life</th>
+                                <th style="font-size: 0.8rem; color: #666;">STEM</th>
+                                <th style="font-size: 0.8rem; color: #666;">Humanity</th>
+                                <th style="font-size: 0.8rem; color: #666;">Life</th>
+                                <th style="font-size: 0.8rem; color: #666;">STEM</th>
+                                <th style="font-size: 0.8rem; color: #666;">Humanity</th>
+                                <th style="font-size: 0.8rem; color: #666;">Life</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Unified Multimodal Models -->
+                            <tr>
+                                <td colspan="14" class="category-row">Unified Multimodal Models</td>
+                            </tr>
+                            <tr class="sota-row">
+                                <td>Gemini Nano Banana</td>
+                                <td>73.9</td><td>65.0</td><td>45.9</td>
+                                <td>58.6</td><td>49.3</td><td>53.1</td>
+                                <td>42.5</td><td>58.7</td><td>52.1</td>
+                                <td>49.4</td><td>27.0</td><td>28.4</td>
+                                <td>53.4</td>
+                            </tr>
+                            <tr class="sota-row">
+                                <td>GPT-4o + GPT-Image-1</td>
+                                <td>58.4</td><td>62.4</td><td>38.3</td>
+                                <td>51.1</td><td>46.1</td><td>50.7</td>
+                                <td>36.9</td><td>53.6</td><td>53.1</td>
+                                <td>59.3</td><td>29.4</td><td>39.8</td>
+                                <td>49.3</td>
+                            </tr>
+                            <tr>
+                                <td>Bagel-7B w/o CoT</td>
+                                <td>32.2</td><td>29.5</td><td>14.9</td>
+                                <td>15.4</td><td>19.9</td><td>17.6</td>
+                                <td>13.1</td><td>11.9</td><td>15.3</td>
+                                <td>11.1</td><td>9.5</td><td>4.3</td>
+                                <td>17.8</td>
+                            </tr>
+                            <tr>
+                                <td>Bagel-7B w. CoT</td>
+                                <td>33.2</td><td>32.3</td><td>18.7</td>
+                                <td>21.3</td><td>35.8</td><td>26.2</td>
+                                <td>13.4</td><td>23.5</td><td>27.4</td>
+                                <td>12.4</td><td>13.2</td><td>5.5</td>
+                                <td>24.2</td>
+                            </tr>
+                            <tr>
+                                <td>Ovis-U1*</td>
+                                <td>29.9</td><td>26.9</td><td>11.9</td>
+                                <td>13.7</td><td>23.2</td><td>16.6</td>
+                                <td>9.8</td><td>31.0</td><td>27.4</td>
+                                <td>16.5</td><td>12.0</td><td>5.8</td>
+                                <td>20.2</td>
+                            </tr>
+                            <tr>
+                                <td>BLIP3o*</td>
+                                <td>30.4</td><td>27.8</td><td>9.8</td>
+                                <td>14.8</td><td>14.7</td><td>18.1</td>
+                                <td>9.6</td><td>16.9</td><td>23.8</td>
+                                <td>9.4</td><td>8.3</td><td>4.0</td>
+                                <td>17.3</td>
+                            </tr>
+                            <tr>
+                                <td>Qwen-Image</td>
+                                <td>34.9</td><td>37.5</td><td>16.9</td>
+                                <td>23.8</td><td>33.5</td><td>26.9</td>
+                                <td>18.8</td><td>30.9</td><td>36.5</td>
+                                <td>10.9</td><td>14.4</td><td>6.2</td>
+                                <td>27.0</td>
+                            </tr>
+                            <tr>
+                                <td>Janus-Pro 7B#</td>
+                                <td>7.9</td><td>18.0</td><td>9.7</td>
+                                <td>13.7</td><td>17.0</td><td>18.2</td>
+                                <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
+                                <td>2.2</td><td>6.5</td><td>2.7</td>
+                                <td class="gray-cell">-</td>
+                            </tr>
+                            <tr>
+                                <td>Show-o2#</td>
+                                <td>15.4</td><td>26.6</td><td>11.1</td>
+                                <td>16.7</td><td>24.7</td><td>22.5</td>
+                                <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
+                                <td>5.3</td><td>8.7</td><td>3.4</td>
+                                <td class="gray-cell">-</td>
+                            </tr>
+                            <tr>
+                                <td>Emu-3#</td>
+                                <td>5.7</td><td>6.2</td><td>1.9</td>
+                                <td>10.2</td><td>14.1</td><td>17.2</td>
+                                <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
+                                <td>3.4</td><td>7.1</td><td>3.4</td>
+                                <td class="gray-cell">-</td>
+                            </tr>
+
+                            <!-- Understanding MLLMs -->
+                            <tr>
+                                <td colspan="14" class="category-row">Understanding MLLMs</td>
+                            </tr>
+                            <tr>
+                                <td>Qwen-3-VL 8B</td>
+                                <td>59.8</td><td>48.5</td><td>23.2</td>
+                                <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
+                                <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
+                                <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
+                                <td class="gray-cell">-</td>
+                            </tr>
+                            <tr>
+                                <td>Kimi-VL-A3B</td>
+                                <td>27.9</td><td>33.7</td><td>18.3</td>
+                                <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
+                                <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
+                                <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
+                                <td class="gray-cell">-</td>
+                            </tr>
+                            <tr>
+                                <td>GPT-5</td>
+                                <td>75.1</td><td>58.2</td><td>57.4</td>
+                                <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
+                                <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
+                                <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
+                                <td class="gray-cell">-</td>
+                            </tr>
+                            <tr>
+                                <td>Gemini-2.5-Pro</td>
+                                <td>68.3</td><td>66.7</td><td>46.8</td>
+                                <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
+                                <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
+                                <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
+                                <td class="gray-cell">-</td>
+                            </tr>
+
+                            <!-- Image Generation or Editing Models -->
+                            <tr>
+                                <td colspan="14" class="category-row">Image Generation or Editing Models</td>
+                            </tr>
+                            <tr>
+                                <td>FLUX.1-Dev*</td>
+                                <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
+                                <td>26.5</td><td>32.2</td><td>18.7</td>
+                                <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
+                                <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
+                                <td class="gray-cell">-</td>
+                            </tr>
+                            <tr>
+                                <td>Step1X-Edit*</td>
+                                <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
+                                <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
+                                <td>19.8</td><td>31.9</td><td>37.1</td>
+                                <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
+                                <td class="gray-cell">-</td>
+                            </tr>
+                            <tr>
+                                <td>Instruct-Pix2Pix*</td>
+                                <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
+                                <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
+                                <td>17.3</td><td>17.6</td><td>23.5</td>
+                                <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
+                                <td class="gray-cell">-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p style="padding: 12px; font-size: 0.85rem; color: #666; margin: 0;">
+                        * Table 3 (Complete): Performance comparison across tasks and domains. Gemini Nano Banana and GPT-4o achieve significantly better results than open-source counterparts. Models marked with * cannot handle interleaved inputs, # denotes models with unsupported tasks.
+                    </p>
+                </div>
+
+                <div style="text-align: center; margin-top: 32px;">
+                    <div style="background-color: #f1f3f4; display: flex; align-items: center; justify-content: center; border-radius: 8px; border: 1px solid #ddd;">
+                        <img src="data/vis.png" alt="Qualitative results visualization" style="max-width: 100%; max-height: 600px; object-fit: contain;">
+                    </div>
+                    <p class="caption">
+                        Figure 3. Visualization of UMMs on Understanding, Generation, and Editing tasks. Nano Banana shows promising quality and consistency.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Core Findings Section -->
+            <div class="paper-card" id="findings">
+                <h2 class="section-title">Core Findings</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
+                    <div style="padding: 16px; background: #f8f9fa; border-left: 4px solid #e74c3c; border-radius: 4px;">
+                        <h3 class="mdc-typography--subtitle1 highlight-text">Severe World Knowledge Deficits</h3>
+                        <p class="mdc-typography--body2">
+                            Most UMMs, with the exception of Gemini Nano Banana, exhibit significant deficits in world knowledge. Open-source models lag substantially behind closed-source counterparts due to limited parameter scale and data quality.
+                        </p>
+                    </div>
+                    <div style="padding: 16px; background: #f8f9fa; border-left: 4px solid #f1c40f; border-radius: 4px;">
+                        <h3 class="mdc-typography--subtitle1 highlight-text">Reasoning Complexity Impact</h3>
+                        <p class="mdc-typography--body2">
+                            Performance degrades considerably across all models when complex reasoning (e.g., Temporal, Causal) is introduced. "Interleaved Generation," which demands the most complex reasoning, shows a precipitous drop in scores.
+                        </p>
+                    </div>
+                    <div style="padding: 16px; background: #f8f9fa; border-left: 4px solid #2ecc71; border-radius: 4px;">
+                        <h3 class="mdc-typography--subtitle1 highlight-text">Understanding Restricts Generation</h3>
+                        <p class="mdc-typography--body2">
+                            There is a clear performance hierarchy: Understanding > Generation > Editing > Interleaved. If a model fails to understand the knowledge in the prompt, it cannot generate or edit correctly.
+                        </p>
+                    </div>
+                    <div style="padding: 16px; background: #f8f9fa; border-left: 4px solid #3498db; border-radius: 4px;">
+                        <h3 class="mdc-typography--subtitle1 highlight-text">Mitigation via Reasoning Modules</h3>
+                        <p class="mdc-typography--body2">
+                            Integrating simple plug-in reasoning modules (like CoT or external clear prompts) can partially mitigate deficits, activating the model's inherent world knowledge.
+                        </p>
+                    </div>
+                    <!-- New Finding from Appendix C.3 -->
+                    <div style="padding: 16px; background: #f8f9fa; border-left: 4px solid #9b59b6; border-radius: 4px;">
+                        <h3 class="mdc-typography--subtitle1 highlight-text">Visual Decoder Bottleneck</h3>
+                        <p class="mdc-typography--body2">
+                            Appendix analysis identifies the visual decoder as a primary bottleneck. Even when the LLM component provides precise and detailed descriptions (e.g., via rewritten prompts), the visual decoder frequently fails to render specific world knowledge concepts accurately.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Demo Section -->
+            <div class="paper-card" id="demo">
+                <h2 class="section-title">Demo</h2>
+                <p class="mdc-typography--body1">
+                    Explore a sample of AEGIS benchmark tasks across four multimodal capabilities: Understanding, Generation, Editing, and Interleaved Generation.
+                </p>
+
+                <!-- Task filter buttons -->
+                <div id="task-filters" style="margin: 24px 0; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;">
+                    <button class="mdc-button mdc-button--outlined task-filter-btn" data-task="all" style="background: #ecf0f1;">
+                        <span class="mdc-button__label">All Tasks</span>
+                    </button>
+                    <button class="mdc-button mdc-button--outlined task-filter-btn" data-task="understanding" style="background: #3498db20; border-color: #3498db;">
+                        <span class="mdc-button__label" style="color: #3498db;">Understanding</span>
+                    </button>
+                    <button class="mdc-button mdc-button--outlined task-filter-btn" data-task="generation" style="background: #2ecc7120; border-color: #2ecc71;">
+                        <span class="mdc-button__label" style="color: #2ecc71;">Generation</span>
+                    </button>
+                    <button class="mdc-button mdc-button--outlined task-filter-btn" data-task="editing" style="background: #e74c3c20; border-color: #e74c3c;">
+                        <span class="mdc-button__label" style="color: #e74c3c;">Editing</span>
+                    </button>
+                    <button class="mdc-button mdc-button--outlined task-filter-btn" data-task="interleaved" style="background: #9b59b620; border-color: #9b59b6;">
+                        <span class="mdc-button__label" style="color: #9b59b6;">Interleaved</span>
+                    </button>
+                </div>
+
+                <!-- Loading indicator -->
+                <div id="demo-loading" style="text-align: center; padding: 40px;">
+                    <div class="mdc-circular-progress mdc-circular-progress--indeterminate" style="width: 48px; height: 48px; margin: 0 auto 20px;">
+                        <div class="mdc-circular-progress__determinate-container">
+                            <div class="mdc-circular-progress__determinate-circle-graphic">
+                                <circle class="mdc-circular-progress__determinate-circle" cx="24" cy="24" r="18" />
+                            </div>
+                        </div>
+                        <div class="mdc-circular-progress__indeterminate-container">
+                            <div class="mdc-circular-progress__indeterminate-circle-graphic">
+                                <circle class="mdc-circular-progress__indeterminate-circle-underlay" cx="24" cy="24" r="18" />
+                                <circle class="mdc-circular-progress__indeterminate-circle-overlay" cx="24" cy="24" r="18" />
+                            </div>
+                        </div>
+                    </div>
+                    <p>Loading demo content...</p>
+                </div>
+
+                <!-- Demo content will be loaded here -->
+                <div id="demo-content" style="display: none;"></div>
+            </div>
+
+            <!-- Citation Section -->
+            <div class="paper-card">
+                <h2 class="section-title">Citation</h2>
+                <div style="background: #f5f5f5; padding: 16px; border-radius: 8px; position: relative;">
+                    <button class="mdc-button mdc-button--raised" style="position: absolute; top: 8px; right: 8px;" onclick="copyCitation()">
+                        <span class="mdc-button__label">Copy</span>
+                    </button>
+                    <pre id="citation" class="mdc-typography--body2" style="overflow-x: auto;">
+@article{lin2025aegis,
+    title={AEGIS: Exploring the Limit of World Knowledge Capabilities for Unified Multimodal Models},
+    author={Lin, Jintao and Dong, Bowen and Shi, Weikang and Lei, Chenyang and Zhang, Suiyun and Liu, Rui and Liu, Xihui},
+    journal={arXiv preprint},
+    year={2025}
+}</pre>
+                </div>
+                <script>
+                function copyCitation() {
+                    const citation = document.getElementById('citation').innerText;
+                    const textarea = document.createElement('textarea');
+                    textarea.value = citation;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    
+                    const button = document.querySelector('button[onclick="copyCitation()"] span');
+                    const originalText = button.innerText;
+                    button.innerText = 'Copied!';
+                    setTimeout(() => {
+                        button.innerText = originalText;
+                    }, 2000);
+                }
+                </script>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        mdc.autoInit();
+
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        let allDemoData = []; // Store all data to allow filtering
+
+        // Load demo content
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('data/demo.json')
+                .then(response => response.json())
+                .then(data => {
+                    allDemoData = data; // Store for filtering
+                    displayDemoContent(data, 'all'); // Show all initially
+                    document.getElementById('demo-loading').style.display = 'none';
+                    document.getElementById('demo-content').style.display = 'block';
+
+                    // Add event listeners to the filter buttons
+                    document.querySelectorAll('.task-filter-btn').forEach(button => {
+                        button.addEventListener('click', function() {
+                            // Update active button styling
+                            document.querySelectorAll('.task-filter-btn').forEach(btn => {
+                                const task = btn.getAttribute('data-task');
+                                if (task === this.getAttribute('data-task')) {
+                                    // Active button styles
+                                    if (task === 'all') {
+                                        btn.style.background = '#2c3e50';
+                                        btn.querySelector('span').style.color = 'white';
+                                    } else {
+                                        switch(task) {
+                                            case 'understanding':
+                                                btn.style.background = '#3498db';
+                                                btn.style.borderColor = '#3498db';
+                                                btn.querySelector('span').style.color = 'white';
+                                                break;
+                                            case 'generation':
+                                                btn.style.background = '#2ecc71';
+                                                btn.style.borderColor = '#2ecc71';
+                                                btn.querySelector('span').style.color = 'white';
+                                                break;
+                                            case 'editing':
+                                                btn.style.background = '#e74c3c';
+                                                btn.style.borderColor = '#e74c3c';
+                                                btn.querySelector('span').style.color = 'white';
+                                                break;
+                                            case 'interleaved':
+                                                btn.style.background = '#9b59b6';
+                                                btn.style.borderColor = '#9b59b6';
+                                                btn.querySelector('span').style.color = 'white';
+                                                break;
+                                        }
+                                    }
+                                } else {
+                                    // Inactive button styles
+                                    if (task === 'all') {
+                                        btn.style.background = '#ecf0f1';
+                                        btn.querySelector('span').style.color = 'initial';
+                                    } else {
+                                        switch(task) {
+                                            case 'understanding':
+                                                btn.style.background = '#3498db20';
+                                                btn.style.borderColor = '#3498db';
+                                                btn.querySelector('span').style.color = '#3498db';
+                                                break;
+                                            case 'generation':
+                                                btn.style.background = '#2ecc7120';
+                                                btn.style.borderColor = '#2ecc71';
+                                                btn.querySelector('span').style.color = '#2ecc71';
+                                                break;
+                                            case 'editing':
+                                                btn.style.background = '#e74c3c20';
+                                                btn.style.borderColor = '#e74c3c';
+                                                btn.querySelector('span').style.color = '#e74c3c';
+                                                break;
+                                            case 'interleaved':
+                                                btn.style.background = '#9b59b620';
+                                                btn.style.borderColor = '#9b59b6';
+                                                btn.querySelector('span').style.color = '#9b59b6';
+                                                break;
+                                        }
+                                    }
+                                }
+                            });
+
+                            // Display content for selected task
+                            const selectedTask = this.getAttribute('data-task');
+                            displayDemoContent(allDemoData, selectedTask);
+                        });
+                    });
+
+                    // Set initial active state for "All Tasks" button
+                    const allTasksBtn = document.querySelector('.task-filter-btn[data-task="all"]');
+                    allTasksBtn.style.background = '#2c3e50';
+                    allTasksBtn.querySelector('span').style.color = 'white';
+                })
+                .catch(error => {
+                    console.error('Error loading demo data:', error);
+                    document.getElementById('demo-loading').innerHTML = '<p style="color: #e74c3c;">Error loading demo content. Please try again later.</p>';
+                });
+        });
+
+        function displayDemoContent(data, taskFilter = 'all') {
+            const container = document.getElementById('demo-content');
+            container.innerHTML = ''; // Clear previous content
+
+            // Filter data based on task
+            let filteredData = data;
+            if (taskFilter !== 'all') {
+                filteredData = data.filter(item => item.task === taskFilter);
+            }
+
+            if (filteredData.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #7f8c8d;">
+                        <h3>No ${taskFilter === 'all' ? '' : taskFilter + ' '}tasks available</h3>
+                        <p>Please select a different task type.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Create layout for each demo item
+            filteredData.forEach((item, index) => {
+                const itemCard = document.createElement('div');
+                itemCard.className = 'paper-card';
+                itemCard.style = 'margin-bottom: 24px;';
+
+                // Task type badge
+                let taskColor = '';
+                switch(item.task) {
+                    case 'understanding':
+                        taskColor = '#3498db';
+                        break;
+                    case 'generation':
+                        taskColor = '#2ecc71';
+                        break;
+                    case 'editing':
+                        taskColor = '#e74c3c';
+                        break;
+                    case 'interleaved':
+                        taskColor = '#9b59b6';
+                        break;
+                    default:
+                        taskColor = '#7f8c8d';
+                }
+
+                // Create HTML for the demo item
+                let html = `
+                    <div style="display: flex; align-items: flex-start; gap: 24px; flex-wrap: wrap; margin-bottom: 16px;">
+                        <div style="flex: 1; min-width: 300px;">
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                                <span style="padding: 4px 12px; border-radius: 16px; font-size: 0.85rem; font-weight: 500; background: ${taskColor}; color: white; text-transform: capitalize;">
+                                    ${item.task}
+                                </span>
+                                <span style="color: #7f8c8d; font-size: 0.9rem;">ID: ${item.id}</span>
+                                <span style="color: #7f8c8d; font-size: 0.9rem;">| ${item.reasoning_type}</span>
+                            </div>
+
+                            <h3 style="margin: 0 0 16px 0; color: #2c3e50; font-size: 1.2rem;">${item.prompt}</h3>
+
+                            <div style="margin: 16px 0;">
+                                <h4 style="margin: 0 0 8px 0; color: #34495e; font-size: 1rem;">Clear Prompt:</h4>
+                                <p style="margin: 0 0 16px 0; line-height: 1.6;">${item.clear_prompt}</p>
+                            </div>
+
+                            <div style="margin: 16px 0;">
+                                <h4 style="margin: 0 0 8px 0; color: #34495e; font-size: 1rem;">Keywords:</h4>
+                                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                    ${item.keywords.split(',').map(keyword =>
+                                        `<span style="padding: 4px 12px; border-radius: 16px; font-size: 0.85rem; background: #ecf0f1; color: #2c3e50;">
+                                            ${keyword.trim()}
+                                        </span>`
+                                    ).join('')}
+                                </div>
+                            </div>
+
+                            ${item.ref_text ? `
+                            <div style="margin: 16px 0;">
+                                <h4 style="margin: 0 0 8px 0; color: #34495e; font-size: 1rem;">Reference Text:</h4>
+                                <div style="background: #f8f9fa; padding: 16px; border-radius: 8px; border-left: 4px solid #bdc3c7;">
+                                    ${item.ref_text.replace(/<image(\d+)>/g, '<em>&lt;image$1&gt;</em>')}
+                                </div>
+                            </div>
+                            ` : ''}
+                        </div>
+
+                        <div style="flex: 1; min-width: 300px;">
+                            ${item.input_image && item.input_image.length > 0 ? `
+                            <div style="margin: 16px 0;">
+                                <h4 style="margin: 0 0 8px 0; color: #34495e; font-size: 1rem;">Input Images:</h4>
+                                <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+                                    ${item.input_image.map(img => `
+                                        <div class="demo-image-container" style="flex: 1; min-width: 150px; max-width: 200px;">
+                                            <img src="data/${img}"
+                                                 alt="Input image"
+                                                 style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer;"
+                                                 onclick="showImageModal('data/${img}')">
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            ` : ''}
+
+                            ${item.ref_image && item.ref_image.length > 0 ? `
+                            <div style="margin: 16px 0;">
+                                <h4 style="margin: 0 0 8px 0; color: #34495e; font-size: 1rem;">Reference Images:</h4>
+                                <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+                                    ${item.ref_image.map(img => `
+                                        <div class="demo-image-container" style="flex: 1; min-width: 150px; max-width: 200px;">
+                                            <img src="data/${img}"
+                                                 alt="Reference image"
+                                                 style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer;"
+                                                 onclick="showImageModal('data/${img}')">
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+
+                itemCard.innerHTML = html;
+                container.appendChild(itemCard);
+            });
+        }
+
+        // Image modal functionality
+        function showImageModal(imageSrc) {
+            // Create modal overlay
+            const overlay = document.createElement('div');
+            overlay.id = 'image-modal-overlay';
+            overlay.style = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 9999;
+                cursor: pointer;
+            `;
+
+            // Create modal content
+            const modalContent = document.createElement('div');
+            modalContent.style = `
+                position: relative;
+                max-width: 90%;
+                max-height: 90%;
+            `;
+
+            // Create image
+            const modalImg = document.createElement('img');
+            modalImg.src = imageSrc;
+            modalImg.style = `
+                max-width: 100%;
+                max-height: 80vh;
+                border-radius: 8px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+                display: block;
+            `;
+
+            // Create back to home button
+            const homeButton = document.createElement('button');
+            homeButton.textContent = 'Back to Home';
+            homeButton.style = `
+                position: absolute;
+                top: 20px;
+                left: 20px;
+                background: #2c3e50;
+                color: white;
+                border: none;
+                padding: 10px 16px;
+                border-radius: 4px;
+                cursor: pointer;
+                z-index: 10000;
+                font-size: 14px;
+            `;
+            homeButton.onclick = function() {
+                window.location.href = '#';
+                document.body.removeChild(overlay);
+            };
+
+            // Add elements to modal
+            modalContent.appendChild(modalImg);
+            modalContent.appendChild(homeButton);
+            overlay.appendChild(modalContent);
+
+            // Close modal on click outside image or on ESC key
+            overlay.addEventListener('click', function(e) {
+                if (e.target === overlay) {
+                    document.body.removeChild(overlay);
+                }
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    document.body.removeChild(overlay);
+                }
+            });
+
+            // Add modal to body
+            document.body.appendChild(overlay);
+        }
+    </script>
+</body>
+</html>

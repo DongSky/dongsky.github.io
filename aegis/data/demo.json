@@ -1,0 +1,146 @@
+[
+  {
+    "id": 502,
+    "task": "understanding",
+    "input_type": "single_image",
+    "prompt": "Please interpret the meaning of this meme <image1>.",
+    "clear_prompt": "Please interpret the meaning of this meme <image1>. The upper is a black picture and the lower is a clear and beautiful scene.",
+    "input_image": [
+      "demo_images/photography/29_1_input.jpg"
+    ],
+    "keywords": "meme, black picture, low light, camera setting, post-production, wide imaging tolerance",
+    "reasoning_type": "causal reasoning",
+    "supercategory": "life",
+    "category": "photography",
+    "ref_text": "A nearly black image is often jokingly attributed to forgetting to remove the lens cap, but this is often due to incorrect camera settings, resulting in insufficient light. However, the image below demonstrates that even with insufficient light, the camera can still retain sufficient image detail, allowing the image to be restored in post-production. This meme is often used to praise a camera's wide imaging tolerance.",
+    "ref_image": []
+  },
+  {
+    "id": 158,
+    "task": "understanding",
+    "input_type": "single_image",
+    "prompt": "Based on <image1>, which player won the FMVP award that year?",
+    "clear_prompt": "Based on <image1>, which player won the FMVP award in 2022?",
+    "input_image": [
+      "demo_images/game/11_1_input.jpg"
+    ],
+    "keywords": "FMVP award, 2022, player, faker, SKT, DRX, Kingen, Faker, Keria",
+    "reasoning_type": "temporal reasoning",
+    "supercategory": "game",
+    "category": "game",
+    "ref_text": "Kingen",
+    "ref_image": []
+  },
+  {
+    "id": 48,
+    "task": "generation",
+    "input_type": "text",
+    "prompt": "What is the typical alcoholic beverage consumed in the Qinghai-Tibet region made from?",
+    "clear_prompt": "Please draw a picture of Himalayan barley.",
+    "input_image": [],
+    "keywords": "agricultural crop, alcoholic beverage, Qinghai-Tibet",
+    "reasoning_type": "logical reasoning",
+    "supercategory": "agriculture",
+    "category": "agriculture",
+    "ref_text": "Himalayan barley",
+    "ref_image": [
+      "demo_images/agriculture/33_1_ref.jpg"
+    ]
+  },
+  {
+    "id": 336,
+    "task": "generation",
+    "input_type": "single_image",
+    "prompt": "Generate a photograph for the original building of that lego model <image1>.",
+    "clear_prompt": "Generate an image of Notre Dame Cathedral of Paris, which is the original building of <image1>.",
+    "input_image": [
+      "demo_images/architecture/9_1_input.jpg"
+    ],
+    "keywords": "Notre Dame, Paris, architecture",
+    "reasoning_type": "logical reasoning",
+    "supercategory": "landmark",
+    "category": "architecture",
+    "ref_text": "",
+    "ref_image": [
+      "demo_images/architecture/9_1_ref.jpg"
+    ]
+  },
+  {
+    "id": 97,
+    "task": "editing",
+    "input_type": "single_image",
+    "prompt": "Please edit the figure in <image1> when he heard others criticising his hairstyle.",
+    "clear_prompt": "Change the expression of J\u014dsuke Higashikata in the image <image1> to one of anger.",
+    "input_image": [
+      "demo_images/anime/32_1_input.jpg"
+    ],
+    "keywords": "Jojo's Bizarre Adventure, J\u014dsuke Higashikata, anger",
+    "reasoning_type": "causal reasoning",
+    "supercategory": [],
+    "category": "anime",
+    "ref_text": "",
+    "ref_image": [
+      "demo_images/anime/32_1_ref.jpg"
+    ]
+  },
+  {
+    "id": 286,
+    "task": "editing",
+    "input_type": "interleaved",
+    "prompt": "Given <image1>, crop out the character that corresponds to <image2>.",
+    "clear_prompt": "Given the image of TMNT <image1>, crop out the character that corresponds to leonardo da vinci <image2>. The turtle is wearing a blue headscarf.",
+    "input_image": [
+      "demo_images/movie/41_1_input.jpg",
+      "demo_images/movie/41_2_input.jpg"
+    ],
+    "keywords": "TMNT, leonardo da vinci, blue headscarf, crop out the figure, turtle",
+    "reasoning_type": "analogical reasoning",
+    "supercategory": [],
+    "category": "movie",
+    "ref_text": "",
+    "ref_image": [
+      "demo_images/movie/41_1_ref.jpg"
+    ]
+  },
+  {
+    "id": 194,
+    "task": "interleaved",
+    "input_type": "text",
+    "prompt": "Use pictures and text to explain the origin of the phrase 'I have to regroup my troops' and the story behind it.",
+    "clear_prompt": "This article, complete with illustrations, tells the story of who said the line 'I have to regroup my forces' in the game StarCraft II, and what that person did after saying it and how they rebuilt their forces.",
+    "input_image": [],
+    "keywords": "StarCraft II, Artanis, Protoss, regrouping forces, Amon, Daelaam, protoss factions",
+    "reasoning_type": "causal reasoning",
+    "supercategory": "academic",
+    "category": "game",
+    "ref_text": "After failing to retake Aiur, Artanis, piloting the Spear of Adun,<image1> allied with the Dominion and unified the four Protoss factions (including the Nerazim, Purifiers, and Taldarim), ultimately forming the powerful Daelaam coalition.<image2> They returned to Aiur, severing the Golden Fleet's link with the Khala, thus defeating Amon and reclaiming their homeland.<image3>",
+    "ref_image": [
+      "demo_images/game/47_1_ref.jpg",
+      "demo_images/game/47_2_ref.jpg",
+      "demo_images/game/47_3_ref.jpg"
+    ]
+  },
+  {
+    "id": 523,
+    "task": "interleaved",
+    "input_type": "interleaved",
+    "prompt": "Using <image1> as an example, the text and graphics interweave to show the meaning of meme <image2>, meme <image3>, and meme <image4>, as well as a schematic diagram based on the first image.",
+    "clear_prompt": "Using <image1> as an example, the text and graphics interweave to show the meaning of meme <image2>, meme <image3>, and meme <image4>, as well as a schematic diagram based on the first image.",
+    "input_image": [
+      "demo_images/photography/50_1_input.jpg",
+      "demo_images/photography/50_2_input.jpg",
+      "demo_images/photography/50_3_input.jpg",
+      "demo_images/photography/50_4_input.jpg"
+    ],
+    "keywords": "photo, moon, lunar, camera, zoom, focus",
+    "reasoning_type": "no reasoning",
+    "supercategory": "life",
+    "category": "photography",
+    "ref_text": "The first meme indicates that the camera moved during shooting, resulting in motion blur, as shown in the following diagram <image1>; the second meme indicates that the camera shooting parameters are too high in exposure, making the picture too bright, as shown in the following diagram <image2>; the third meme indicates that the wrong filter was used during post-production color grading, resulting in the wrong color combination in the picture, as shown in the following diagram <image3>.",
+    "ref_image": [
+      "demo_images/photography/50_1_ref.jpg",
+      "demo_images/photography/50_2_ref.jpg",
+      "demo_images/photography/50_3_ref.jpg"
+    ]
+  }
+]
