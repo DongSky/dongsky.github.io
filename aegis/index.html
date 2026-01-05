@@ -6,10 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
     <meta name="description" content="AEGIS: A comprehensive multi-task benchmark for unified multimodal models covering visual understanding, generation, editing, and interleaved generation.">
 
-    <!-- Favicon -->
     <link rel="icon" type="image/png" href="data/aegis-meme.png">
 
-    <!-- Material Design Dependencies -->
     <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
     <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
@@ -255,7 +253,6 @@
 </head>
 
 <body>
-    <!-- Top App Bar -->
     <header class="mdc-top-app-bar">
         <div class="mdc-top-app-bar__row">
             <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
@@ -274,11 +271,9 @@
 
     <div class="main-content">
         <div class="container">
-            <!-- Title Section -->
             <div class="paper-card title-section">
                 <h1 class="mdc-typography--headline4" style="font-weight: 700;">AEGIS: Exploring the Limit of World Knowledge Capabilities for Unified Multimodal Models</h1>
                 
-                <!-- Authors -->
                 <div class="author-section">
                     <a href="#" class="author-chip">Jintao Lin<sup>1*</sup></a>
                     <a href="#" class="author-chip">Bowen Dong<sup>2*</sup></a>
@@ -289,14 +284,12 @@
                     <a href="#" class="author-chip">Xihui Liu<sup>1†</sup></a>
                 </div>
 
-                <!-- Affiliations -->
                 <div class="affiliation-section">
                     <div><sup>1</sup>University of Hong Kong &nbsp;&nbsp; <sup>2</sup>The Hong Kong Polytechnic University</div>
                     <div><sup>3</sup>The Chinese University of Hong Kong &nbsp;&nbsp; <sup>4</sup>Huawei Research</div>
                     <div style="margin-top: 8px; font-size: 0.8rem;">*Equal contribution, in random order &nbsp;&nbsp; †Corresponding author</div>
                 </div>
 
-                <!-- Links -->
                 <div style="display: flex; justify-content: center; gap: 16px; margin: 32px 0;">
                     <a href="#" class="mdc-button mdc-button--raised">
                         <i class="material-icons mdc-button__icon" aria-hidden="true">description</i>
@@ -309,11 +302,9 @@
                 </div>
             </div>
 
-            <!-- Abstract Section -->
             <div class="paper-card" id="abstract">
                 <h2 class="section-title">Abstract</h2>
                 <div style="text-align: center;">
-                    <!-- Teaser Image -->
                     <div style="background-color: #f1f3f4; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-bottom: 24px;">
                         <img src="data/teaser.png" alt="AEGIS benchmark illustration" style="max-width: 100%; max-height: 400px; object-fit: contain;">
                     </div>
@@ -326,7 +317,6 @@
                 </p>
             </div>
 
-            <!-- Motivation & Highlights Section -->
             <div class="paper-card" id="motivation">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px;">
                     <div>
@@ -366,7 +356,6 @@
                 </div>
             </div>
 
-            <!-- Methodology Section -->
             <div class="paper-card" id="method">
                 <h2 class="section-title">Methodology: AEGIS & DCE</h2>
                 
@@ -394,7 +383,6 @@
                 </ol>
                 
                 <div style="text-align: center; margin-top: 24px;">
-                    <!-- Method Image -->
                     <div style="background-color: #f8f9fa; display: flex; align-items: center; justify-content: center; border-radius: 8px; border: 1px dashed #ccc;">
                         <img src="data/pipeline.png" alt="AEGIS data construction and DCE pipeline" style="max-width: 100%; max-height: 500px; object-fit: contain;">
                     </div>
@@ -402,7 +390,6 @@
                 </div>
             </div>
 
-            <!-- Results Section -->
             <div class="paper-card" id="results">
                 <h2 class="section-title">Main Experiment Results</h2>
                 <p class="mdc-typography--body1">
@@ -421,7 +408,6 @@
                                 <th rowspan="2">Overall</th>
                             </tr>
                             <tr>
-                                <!-- Subheaders -->
                                 <th style="font-size: 0.8rem; color: #666;">STEM</th>
                                 <th style="font-size: 0.8rem; color: #666;">Humanity</th>
                                 <th style="font-size: 0.8rem; color: #666;">Life</th>
@@ -437,65 +423,64 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Unified Multimodal Models -->
                             <tr>
                                 <td colspan="14" class="category-row">Unified Multimodal Models</td>
                             </tr>
                             <tr class="sota-row">
                                 <td>Gemini Nano Banana</td>
-                                <td>73.9</td><td>65.0</td><td>45.9</td>
-                                <td>58.6</td><td>49.3</td><td>53.1</td>
-                                <td>42.5</td><td>58.7</td><td>52.1</td>
-                                <td>49.4</td><td>27.0</td><td>28.4</td>
-                                <td>53.4</td>
+                                <td>64.5</td><td>65.7</td><td>55.0</td>
+                                <td>42.6</td><td>49.5</td><td>45.5</td>
+                                <td>44.4</td><td>62.4</td><td>54.2</td>
+                                <td>50.2</td><td>41.6</td><td>43.4</td>
+                                <td>52.9</td>
                             </tr>
                             <tr class="sota-row">
                                 <td>GPT-4o + GPT-Image-1</td>
-                                <td>58.4</td><td>62.4</td><td>38.3</td>
-                                <td>51.1</td><td>46.1</td><td>50.7</td>
-                                <td>36.9</td><td>53.6</td><td>53.1</td>
-                                <td>59.3</td><td>29.4</td><td>39.8</td>
-                                <td>49.3</td>
+                                <td>52.9</td><td>50.9</td><td>46.9</td>
+                                <td>38.2</td><td>51.6</td><td>42.8</td>
+                                <td>39.4</td><td>53.2</td><td>45.2</td>
+                                <td>38.9</td><td>34.7</td><td>33.0</td>
+                                <td>45.7</td>
                             </tr>
                             <tr>
                                 <td>Bagel-7B w/o CoT</td>
-                                <td>32.2</td><td>29.5</td><td>14.9</td>
-                                <td>15.4</td><td>19.9</td><td>17.6</td>
-                                <td>13.1</td><td>11.9</td><td>15.3</td>
-                                <td>11.1</td><td>9.5</td><td>4.3</td>
-                                <td>17.8</td>
+                                <td>25.5</td><td>26.9</td><td>19.3</td>
+                                <td>12.1</td><td>20.6</td><td>15.3</td>
+                                <td>15.0</td><td>17.6</td><td>21.2</td>
+                                <td>13.0</td><td>11.9</td><td>8.2</td>
+                                <td>18.5</td>
                             </tr>
                             <tr>
                                 <td>Bagel-7B w. CoT</td>
-                                <td>33.2</td><td>32.3</td><td>18.7</td>
-                                <td>21.3</td><td>35.8</td><td>26.2</td>
-                                <td>13.4</td><td>23.5</td><td>27.4</td>
-                                <td>12.4</td><td>13.2</td><td>5.5</td>
-                                <td>24.2</td>
+                                <td>31.8</td><td>31.7</td><td>22.0</td>
+                                <td>14.9</td><td>31.2</td><td>21.3</td>
+                                <td>11.6</td><td>23.5</td><td>23.1</td>
+                                <td>11.8</td><td>11.9</td><td>9.9</td>
+                                <td>22.3</td>
                             </tr>
                             <tr>
                                 <td>Ovis-U1*</td>
-                                <td>29.9</td><td>26.9</td><td>11.9</td>
-                                <td>13.7</td><td>23.2</td><td>16.6</td>
-                                <td>9.8</td><td>31.0</td><td>27.4</td>
-                                <td>16.5</td><td>12.0</td><td>5.8</td>
-                                <td>20.2</td>
+                                <td>26.3</td><td>31.0</td><td>17.1</td>
+                                <td>12.7</td><td>25.0</td><td>16.3</td>
+                                <td>19.3</td><td>27.2</td><td>25.9</td>
+                                <td>12.2</td><td>12.5</td><td>8.4</td>
+                                <td>21.2</td>
                             </tr>
                             <tr>
                                 <td>BLIP3o*</td>
-                                <td>30.4</td><td>27.8</td><td>9.8</td>
-                                <td>14.8</td><td>14.7</td><td>18.1</td>
-                                <td>9.6</td><td>16.9</td><td>23.8</td>
+                                <td>30.8</td><td>43.3</td><td>21.7</td>
+                                <td>3.7</td><td>6.3</td><td>2.7</td>
+                                <td>2.6</td><td>4.4</td><td>4.5</td>
                                 <td>9.4</td><td>8.3</td><td>4.0</td>
-                                <td>17.3</td>
+                                <td>13.7</td>
                             </tr>
                             <tr>
                                 <td>Qwen-Image</td>
-                                <td>34.9</td><td>37.5</td><td>16.9</td>
-                                <td>23.8</td><td>33.5</td><td>26.9</td>
-                                <td>18.8</td><td>30.9</td><td>36.5</td>
-                                <td>10.9</td><td>14.4</td><td>6.2</td>
-                                <td>27.0</td>
+                                <td>31.4</td><td>41.2</td><td>22.7</td>
+                                <td>17.9</td><td>31.9</td><td>25.4</td>
+                                <td>20.7</td><td>35.4</td><td>33.4</td>
+                                <td>22.0</td><td>18.7</td><td>17.9</td>
+                                <td>28.0</td>
                             </tr>
                             <tr>
                                 <td>Janus-Pro 7B#</td>
@@ -515,20 +500,19 @@
                             </tr>
                             <tr>
                                 <td>Emu-3#</td>
-                                <td>5.7</td><td>6.2</td><td>1.9</td>
-                                <td>10.2</td><td>14.1</td><td>17.2</td>
+                                <td>3.1</td><td>8.0</td><td>2.0</td>
+                                <td>8.9</td><td>19.7</td><td>14.5</td>
                                 <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
-                                <td>3.4</td><td>7.1</td><td>3.4</td>
+                                <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
                                 <td class="gray-cell">-</td>
                             </tr>
 
-                            <!-- Understanding MLLMs -->
                             <tr>
                                 <td colspan="14" class="category-row">Understanding MLLMs</td>
                             </tr>
                             <tr>
                                 <td>Qwen-3-VL 8B</td>
-                                <td>59.8</td><td>48.5</td><td>23.2</td>
+                                <td>42.6</td><td>48.1</td><td>34.0</td>
                                 <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
                                 <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
                                 <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
@@ -536,7 +520,7 @@
                             </tr>
                             <tr>
                                 <td>Kimi-VL-A3B</td>
-                                <td>27.9</td><td>33.7</td><td>18.3</td>
+                                <td>30.6</td><td>36.4</td><td>23.5</td>
                                 <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
                                 <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
                                 <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
@@ -544,7 +528,7 @@
                             </tr>
                             <tr>
                                 <td>GPT-5</td>
-                                <td>75.1</td><td>58.2</td><td>57.4</td>
+                                <td>67.0</td><td>57.4</td><td>60.6</td>
                                 <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
                                 <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
                                 <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
@@ -552,21 +536,20 @@
                             </tr>
                             <tr>
                                 <td>Gemini-2.5-Pro</td>
-                                <td>68.3</td><td>66.7</td><td>46.8</td>
+                                <td>72.1</td><td>77.3</td><td>63.3</td>
                                 <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
                                 <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
                                 <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
                                 <td class="gray-cell">-</td>
                             </tr>
 
-                            <!-- Image Generation or Editing Models -->
                             <tr>
                                 <td colspan="14" class="category-row">Image Generation or Editing Models</td>
                             </tr>
                             <tr>
                                 <td>FLUX.1-Dev*</td>
                                 <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
-                                <td>26.5</td><td>32.2</td><td>18.7</td>
+                                <td>15.4</td><td>29.2</td><td>16.8</td>
                                 <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
                                 <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
                                 <td class="gray-cell">-</td>
@@ -587,6 +570,14 @@
                                 <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
                                 <td class="gray-cell">-</td>
                             </tr>
+                            <tr>
+                                <td>Seedream*</td>
+                                <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
+                                <td>33.9</td><td>43.7</td><td>38.6</td>
+                                <td>32.8</td><td>53.0</td><td>43.0</td>
+                                <td class="gray-cell">-</td><td class="gray-cell">-</td><td class="gray-cell">-</td>
+                                <td class="gray-cell">-</td>
+                            </tr>
                         </tbody>
                     </table>
                     <p style="padding: 12px; font-size: 0.85rem; color: #666; margin: 0;">
@@ -604,7 +595,6 @@
                 </div>
             </div>
 
-            <!-- Core Findings Section -->
             <div class="paper-card" id="findings">
                 <h2 class="section-title">Core Findings</h2>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
@@ -632,7 +622,6 @@
                             Integrating simple plug-in reasoning modules (like CoT or external clear prompts) can partially mitigate deficits, activating the model's inherent world knowledge.
                         </p>
                     </div>
-                    <!-- New Finding from Appendix C.3 -->
                     <div style="padding: 16px; background: #f8f9fa; border-left: 4px solid #9b59b6; border-radius: 4px;">
                         <h3 class="mdc-typography--subtitle1 highlight-text">Visual Decoder Bottleneck</h3>
                         <p class="mdc-typography--body2">
@@ -642,14 +631,12 @@
                 </div>
             </div>
 
-            <!-- Demo Section -->
             <div class="paper-card" id="demo">
                 <h2 class="section-title">Demo</h2>
                 <p class="mdc-typography--body1">
                     Explore a sample of AEGIS benchmark tasks across four multimodal capabilities: Understanding, Generation, Editing, and Interleaved Generation.
                 </p>
 
-                <!-- Task filter buttons -->
                 <div id="task-filters" style="margin: 24px 0; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;">
                     <button class="mdc-button mdc-button--outlined task-filter-btn" data-task="all" style="background: #ecf0f1;">
                         <span class="mdc-button__label">All Tasks</span>
@@ -668,7 +655,6 @@
                     </button>
                 </div>
 
-                <!-- Loading indicator -->
                 <div id="demo-loading" style="text-align: center; padding: 40px;">
                     <div class="mdc-circular-progress mdc-circular-progress--indeterminate" style="width: 48px; height: 48px; margin: 0 auto 20px;">
                         <div class="mdc-circular-progress__determinate-container">
@@ -686,11 +672,9 @@
                     <p>Loading demo content...</p>
                 </div>
 
-                <!-- Demo content will be loaded here -->
                 <div id="demo-content" style="display: none;"></div>
             </div>
 
-            <!-- Citation Section -->
             <div class="paper-card">
                 <h2 class="section-title">Citation</h2>
                 <div style="background: #f5f5f5; padding: 16px; border-radius: 8px; position: relative;">
